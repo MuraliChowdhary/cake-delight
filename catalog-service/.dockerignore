@@ -1,0 +1,56 @@
+# Dependencies (Always ignore; install fresh inside the container)
+node_modules
+jspm_packages
+.pnpm-store
+
+# Debugging and logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Sensitive environment variables and secrets
+.env
+.env.local
+.env.development
+.env.production
+.env*.local
+.aws
+.npmrc
+
+# Production build outputs (if built in-container via multi-stage builds)
+dist
+build
+.next
+.nuxt
+out
+
+# Testing and coverage artifacts
+coverage
+.nyc_output
+**/*.test.js
+**/*.spec.js
+__tests__
+
+# Source control and CI/CD configurations
+.git
+.gitignore
+.github
+.gitlab-ci.yml
+
+# IDE, Editor configurations, and OS metadata
+.vscode
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.DS_Store
+Thumbs.db
+
+# Documentation
+README.md
+LICENSE
+docs/

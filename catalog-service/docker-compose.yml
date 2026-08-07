@@ -1,0 +1,43 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: catalog_user
+      POSTGRES_PASSWORD: catalog_pass
+      POSTGRES_DB: catalog_db
+    ports:
+      - 5432:5432
+    volumes:
+      - catalog-postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U catalog_user -d catalog_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  
+  catalog-service:
+    build: .
+    ports:
+      - 5001:5001
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: developement
+      PORT: 5001
+      DATABASE_URL: postgres://catalog_user:catalog_pass@postgres:5432/catalog_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
+volumes:
+  catalog-postgres-data:
+
+networks:
+  app-network:
+
+    
