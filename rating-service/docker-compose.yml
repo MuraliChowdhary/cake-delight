@@ -1,0 +1,43 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: rating_user
+      POSTGRES_PASSWORD: rating_pass
+      POSTGRES_DB: rating_db
+    ports:
+      - 5433:5432
+    volumes:
+      - rating-postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rating_user -d rating_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  
+  rating-service:
+    build: .
+    ports:
+      - 5003:5003
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: developement
+      PORT: 5003
+      DATABASE_URL: postgres://rating_user:rating_pass@postgres:5432/rating_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
+volumes:
+  rating-postgres-data:
+
+networks:
+  app-network:
+
+    
