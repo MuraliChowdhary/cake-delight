@@ -19,7 +19,7 @@ async function getCakeByIdHandler(req, res, next) {
     const cake = await cakeService.getCakeById(req.params.id);
 
     if (cake === null) {
-      throw AppError('Cake Id not found', 404);
+      throw new AppError('Cake Id not found', 404);
     }
     res.json({ status: 'success', data: cake });
   } catch (err) {
@@ -39,7 +39,7 @@ async function createCakeHandler(req, res, next) {
 async function updateCakeHandler(req, res, next) {
   try {
     const updatedCake = await cakeService.updateCake(req.params.id, req.body);
-    res.status(201).json({ status: 'success', data: updatedCake });
+    res.status(200).json({ status: 'success', data: updatedCake });
   } catch (error) {
     next(error);
   }

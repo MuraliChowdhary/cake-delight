@@ -12,7 +12,12 @@ server.listen(env.port, () => {
   logger.info(`Cake Catalog Service running on port ${env.port} in ${env.nodeEnv} mode`);
 });
 
+let isShuttingDown = false;
+
 function handleShutdown(signal) {
+   if (isShuttingDown) return;
+  isShuttingDown = true;
+
   logger.info(`${signal} received. Closing HTTP server...`);
 
   server.close(async () => {

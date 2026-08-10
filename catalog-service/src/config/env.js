@@ -1,4 +1,5 @@
 const dotenv = require('dotenv');
+const AppError = require('../utils/app-error');
 
 dotenv.config();
 
@@ -10,7 +11,7 @@ const env = {
 };
 
 if (!process.env.DATABASE_URL && env.nodeEnv === 'production') {
-  throw new Error('DATABASE_URL environment variable is required in production');
+  throw new AppError('DATABASE_URL environment variable is required in production',400);
 }
 
 module.exports = env;

@@ -7,7 +7,7 @@ afterAll(async () => {
 });
 
 describe('Catalog Service Integration & Perspective Tests', () => {
-  let createdCakeId;
+  let createdCakeId=0;
 
   // Perspective 1: Positive Path - Creation
   test('POST /api/v1/cakes - Should create a new cake with valid payload', async () => {
@@ -15,8 +15,7 @@ describe('Catalog Service Integration & Perspective Tests', () => {
       name: 'Red Velvet Deluxe',
       description: 'Rich cream cheese frosting cake',
       price: 25.99,
-      category: 'Gourmet',
-      stock: 10,
+      category: 'Gourmet'
     };
 
     const response = await request(app)

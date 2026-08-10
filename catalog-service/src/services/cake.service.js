@@ -20,12 +20,15 @@ async function createCake(cakeData) {
   return cakeRepository.create(cakeData);
 }
 
-async function updateCake(id, updatecakeData) {
-  await getCakeById(id);
-  return cakeRepository.update(id, updatecakeData);
+async function updateCake(id, updateCakeData) {
+  const existing = await getCakeById(id);
+  if (!existing) throw new AppError('Cake not found', 404);
+  return cakeRepository.update(id, updateCakeData);
 }
 
 async function deleteCake(id) {
+  const existing = await getCakeById(id);
+  if (!existing) throw new AppError('Cake not found', 404);
   return cakeRepository.remove(id);
 }
 

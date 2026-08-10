@@ -1,12 +1,11 @@
-function AppError(message, statusCode) {
-  Error.captureStackTrace(this, this.constructor);
+class AppError extends Error {
+  constructor(message, statusCode) {
+    super(message);
+    this.statusCode = statusCode;
+    this.isOperational = true;
 
-  this.name = 'AppError';
-  this.message = message;
-  this.statusCode = statusCode;
+    Error.captureStackTrace(this, this.constructor);
+  }
 }
-
-AppError.prototype = Object.create(Error.prototype);
-AppError.prototype.constructor = AppError;
 
 module.exports = AppError;
