@@ -1,0 +1,197 @@
+services:
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: cake-delight-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: cakeuser
+      RABBITMQ_DEFAULT_PASS: cakepass
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cake-delight-net
+
+
+  # ---------- CATALOG ----------
+
+  catalog-db:
+    image: postgres:16
+    container_name: cake-delight-catalog-db
+    environment:
+      POSTGRES_USER: catalog_user
+      POSTGRES_PASSWORD: catalog_pass
+      POSTGRES_DB: catalog_db
+    ports:
+      - "5433:5432"   # host-mapped, for local/non-docker testing only
+    volumes:
+      - catalog-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U catalog_user -d catalog_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cake-delight-net
+
+  catalog-service:
+    build: ./catalog-service
+    container_name: cake-delight-catalog-service
+    ports:
+      - "5001:5001"
+    depends_on:
+      catalog-db:
+        condition: service_healthy
+    environment:
+      PORT: 5001
+      NODE_ENV: development
+      DATABASE_URL: postgres://catalog_user:catalog_pass@catalog-db:5432/catalog_db
+      ALLOWED_ORIGIN: http://localhost:5000
+    networks:
+      - cake-delight-net
+
+
+  # ---------- RATING ----------
+
+  rating-db:
+    image: postgres:16
+    container_name: cake-delight-rating-db
+    environment:
+      POSTGRES_USER: rating_user
+      POSTGRES_PASSWORD: rating_pass
+      POSTGRES_DB: rating_db
+    ports:
+      - "5436:5432"   # host-mapped, for local/non-docker testing only
+    volumes:
+      - rating-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rating_user -d rating_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cake-delight-net
+
+  rating-service:
+    build: ./rating-service
+    container_name: cake-delight-rating-service
+    ports:
+      - "5003:5003"
+    depends_on:
+      rating-db:
+        condition: service_healthy
+    environment:
+      PORT: 5003
+      NODE_ENV: development
+      DATABASE_URL: postgres://rating_user:rating_pass@rating-db:5432/rating_db
+      ALLOWED_ORIGIN: http://localhost:5000
+    networks:
+      - cake-delight-net
+
+
+  # ---------- ORDER ----------
+
+  order-db:
+    image: postgres:16
+    container_name: cake-delight-order-db
+    environment:
+      POSTGRES_USER: order_user
+      POSTGRES_PASSWORD: order_pass
+      POSTGRES_DB: order_db
+    ports:
+      - "5434:5432"   # host-mapped, for local/non-docker testing only
+    volumes:
+      - order-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U order_user -d order_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cake-delight-net
+
+  order-service:
+    build: ./order-service
+    container_name: cake-delight-order-service
+    ports:
+      - "5002:5002"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      order-db:
+        condition: service_healthy
+      catalog-service:
+        condition: service_started   # Catalog has no DB-backed healthcheck exposed yet — see note below
+    environment:
+      PORT: 5002
+      NODE_ENV: development
+      DATABASE_URL: postgres://order_user:order_pass@order-db:5432/order_db
+      RABBITMQ_URL: amqp://cakeuser:cakepass@rabbitmq:5672
+      CATALOG_SERVICE_URL: http://catalog-service:5001
+    networks:
+      - cake-delight-net
+
+
+  # ---------- NOTIFICATION ----------
+
+  notification-db:
+    image: postgres:16
+    container_name: cake-delight-notification-db
+    environment:
+      POSTGRES_USER: notification_user
+      POSTGRES_PASSWORD: notification_pass
+      POSTGRES_DB: notification_db
+    ports:
+      - "5435:5432"   # host-mapped, for local/non-docker testing only
+    volumes:
+      - notification-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notification_user -d notification_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cake-delight-net
+
+  notification-service:
+    build: ./notification-service
+    container_name: cake-delight-notification-service
+    ports:
+      - "5004:5004"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      notification-db:
+        condition: service_healthy
+    environment:
+      PORT: 5004
+      NODE_ENV: development
+      DATABASE_URL: postgres://notification_user:notification_pass@notification-db:5432/notification_db
+      RABBITMQ_URL: amqp://cakeuser:cakepass@rabbitmq:5672
+      EMAIL_HOST: smtp.ethereal.email
+      EMAIL_PORT: 587
+      EMAIL_USER: jason.green24@ethereal.email
+      EMAIL_PASS: eRndjFyfcK65wD6QkU
+      EMAIL_FROM: orders@cakedelight.test
+    networks:
+      - cake-delight-net
+
+
+networks:
+  cake-delight-net:
+    driver: bridge
+
+
+volumes:
+  rabbitmq-data:
+  catalog-db-data:
+  rating-db-data:
+  order-db-data:
+  notification-db-data:
