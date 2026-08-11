@@ -11,7 +11,7 @@
     "migrate:create": "npx node-pg-migrate create -m db/migrations",
     "lint": "eslint src/**/*.js",
     "format": "prettier --write src/**/*.js",
-    "test":"jest"
+    "test": "jest"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -19,6 +19,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "helmet": "^8.3.0",
+    "ioredis": "^6.0.0",
     "pg": "^8.11.5",
     "pino": "^9.0.0",
     "pino-pretty": "^11.0.0",

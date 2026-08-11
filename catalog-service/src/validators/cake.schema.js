@@ -15,14 +15,16 @@ const updateCakeSchema = z.object({
   params: z.object({
     id: z.string().uuid({ message: 'Invalid UUID format' }),
   }),
-  body: z.object({
-    name: z.string().min(2).optional(),
-    description: z.string().optional(),
-    price: z.number().positive().optional(),
-    category: z.string().min(2).optional(),
-    imageUrl: z.string().url().optional(),
-    isAvailable: z.boolean().optional(),
-  }).strict()
+  body: z
+    .object({
+      name: z.string().min(2).optional(),
+      description: z.string().optional(),
+      price: z.number().positive().optional(),
+      category: z.string().min(2).optional(),
+      imageUrl: z.string().url().optional(),
+      isAvailable: z.boolean().optional(),
+    })
+    .strict(),
 });
 
 const getCakesQuerySchema = z.object({
