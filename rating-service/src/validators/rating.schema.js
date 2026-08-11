@@ -22,7 +22,6 @@ const createRatingSchema = z.object({
       score: z.number().int().min(1, 'Score must be at least 1').max(5, 'Score cannot exceed 5'),
       comment: z.string().min(3, 'Comment must be at least 3 characters long').optional(),
     })
-    .strict(),
 });
 
 const updateRatingSchema = z.object({

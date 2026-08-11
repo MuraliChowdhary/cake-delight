@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const helmet = require('helmet').default || require('helmet');
+const helmet = require('helmet').default;
 const requestLogger = require('./src/middlewares/request-logger');
 const requestMiddleware = require('./src/middlewares/request-id')
 const errorHandler = require('./src/middlewares/error-handler');
@@ -15,7 +15,7 @@ app.use(helmet());
 app.use(cors({
     origin: env.nodeEnv === 'production' ? process.env.ALLOWED_ORIGIN || false : '*',
     methods: ['GET','POST','PUT','DELETE','OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-request-id'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-User-Id','x-request-id'],
 }));
 
 app.use(express.json({limit:'10kb'}));
