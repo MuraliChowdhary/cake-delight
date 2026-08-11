@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rating-db
+  namespace: cake-delight
+spec:
+  clusterIP: None
+  selector:
+    app: rating-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rating-db
+  namespace: cake-delight
+spec:
+  serviceName: rating-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rating-db
+  template:
+    metadata:
+      labels:
+        app: rating-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: rating-db-secret
+          volumeMounts:
+            - name: rating-db-storage
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "rating_user", "-d", "rating_db"]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", "rating_user", "-d", "rating_db"]
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
+  volumeClaimTemplates:
+    - metadata:
+        name: rating-db-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
