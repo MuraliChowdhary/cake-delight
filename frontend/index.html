@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cake Delight</title>
+  <style>
+    /* Clean Enterprise-style CSS */
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+
+    /* Navbar */
+    header {
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      font-size: 1.25rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text-main);
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .user-badge {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      background: var(--bg);
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    button:hover { background-color: var(--primary-hover); }
+    button.secondary { background-color: var(--bg); color: var(--text-main); border: 1px solid var(--border); }
+    button.secondary:hover { background-color: var(--border); }
+    
+    /* Layout */
+    main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+
+    /* Catalog Grid */
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .card-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background-color: var(--border);
+    }
+
+    .card-content { padding: 1.25rem; }
+    .card-title { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .card-category { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;}
+    .card-price { font-size: 1.25rem; font-weight: 600; color: var(--text-main); }
+    .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
+
+    /* Detail View */
+    .detail-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      background: var(--card-bg);
+      padding: 2rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .detail-img { width: 100%; height: auto; border-radius: 8px; }
+    .action-group { display: flex; gap: 1rem; margin-top: 2rem; align-items: center; }
+    .qty-input { width: 60px; padding: 0.5rem; border: 1px solid var(--border); border-radius: 6px; text-align: center; }
+
+    /* Cart / Checkout */
+    .cart-layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+    }
+    .cart-items { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; }
+    .cart-item { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--border); }
+    .cart-item:last-child { border-bottom: none; }
+    .summary-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; height: fit-content; }
+    .summary-row { display: flex; justify-content: space-between; margin-bottom: 1rem; font-weight: 600; font-size: 1.25rem; }
+    .input-group { margin-bottom: 1.5rem; }
+    .input-group label { display: block; margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 500; }
+    .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; }
+    
+    /* Utilities */
+    .hidden { display: none !important; }
+    .alert { padding: 1rem; background: #dcfce7; color: var(--success); border-radius: 6px; margin-bottom: 1rem; }
+    .error { color: #dc2626; margin-top: 0.5rem; font-size: 0.875rem; }
+    .badge-rated {
+      background: #fef3c7;
+      color: #b45309;
+      font-size: 0.8rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="nav-container">
+      <div class="brand" onclick="navigateTo('catalog')">Cake Delight</div>
+      <div class="nav-actions">
+        <span class="user-badge" id="user-indicator">User A</span>
+        <button class="secondary" onclick="navigateTo('orders')">Your Orders</button>
+        <!-- NEW: My Reviews button -->
+        <button class="secondary" onclick="navigateTo('my-reviews')">My Reviews</button>
+        <button class="secondary" onclick="navigateTo('cart')">Basket (<span id="cart-count">0</span>)</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="app-root">
+    <!-- Content injected via JS -->
+  </main>
+
+  <script>
+    // Configuration
+    const API_GATEWAY = 'http://localhost:5000/api/v1';
+    const USER_ID = '11111111-1111-1111-1111-111111111111';
+    
+    // State
+    const appRoot = document.getElementById('app-root');
+    const cartCountEl = document.getElementById('cart-count');
+
+    // --- API Service Wrapper ---
+    async function fetchAPI(endpoint, options = {}) {
+      const headers = {
+        'Content-Type': 'application/json',
+        'X-User-Id': USER_ID,
+        ...options.headers
+      };
+
+      try {
+        const response = await fetch(`${API_GATEWAY}${endpoint}`, { ...options, headers });
+        if (response.status === 204) return { status: 'success' };
+        
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || data.error || 'API Request Failed');
+        
+        return data.data !== undefined ? data.data : data; 
+      } catch (error) {
+        console.error(`Error fetching ${endpoint}:`, error);
+        throw error;
+      }
+    }
+
+    // --- Navigation Logic ---
+    async function navigateTo(view, param = null) {
+      appRoot.innerHTML = '<p>Loading...</p>';
+      try {
+        if (view === 'catalog') await renderCatalog();
+        else if (view === 'cake') await renderCakeDetail(param);
+        else if (view === 'cart') await renderCart();
+        else if (view === 'order-success') await renderOrderSuccess(param);
+        else if (view === 'orders') await renderOrders();
+        else if (view === 'my-reviews') await renderMyReviews();
+        else if (view === 'rate') await renderRateView(param);
+        
+        updateBasketCount();
+      } catch (error) {
+        appRoot.innerHTML = `<div class="error">Failed to load view: ${error.message}</div>`;
+      }
+    }
+
+    // 1. Catalog View
+    // 1. Catalog View (With average ratings query for grid layout)
+    async function renderCatalog() {
+      const cakes = await fetchAPI('/cakes');
+      const cakeList = Array.isArray(cakes) ? cakes : (cakes.cakes || []);
+
+      // Fetch average ratings for each cake in parallel
+      const ratingsMap = {};
+      await Promise.all(
+        cakeList.map(async (cake) => {
+          try {
+            const avgData = await fetchAPI(`/cakes/${cake.id}/ratings/average`);
+            ratingsMap[cake.id] = avgData;
+          } catch (e) {
+            ratingsMap[cake.id] = { averageScore: 0, totalReviews: 0 };
+          }
+        })
+      );
+
+      let html = `<div class="catalog-grid">`;
+      cakeList.forEach(cake => {
+        // Extract the rating for this specific cake
+        const rating = ratingsMap[cake.id] || { averageScore: 0, totalReviews: 0 };
+        const scoreDisplay = rating.averageScore && rating.averageScore > 0 
+          ? `★ ${Number(rating.averageScore).toFixed(1)} (${rating.totalReviews})`
+          : `★ New`;
+
+        html += `
+          <div class="card" onclick="navigateTo('cake', '${cake.id}')">
+            <img class="card-img" src="${cake.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${cake.name}">
+            <div class="card-content">
+              <div class="card-meta">
+                <span class="card-category">${cake.category || 'General'}</span>
+                <!-- Renders the dynamic average score here -->
+                <span class="card-rating" style="color: #b45309; font-weight: 600;">${scoreDisplay}</span>
+              </div>
+              <div class="card-title">${cake.name}</div>
+              <div class="card-footer">
+                <span class="card-price">₹${Number(cake.price).toFixed(2)}</span>
+                <span style="color: ${cake.isAvailable ? 'var(--success)' : '#dc2626'}">
+                  ${cake.isAvailable ? 'Available' : 'Sold Out'}
+                </span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+      appRoot.innerHTML = html;
+    }
+    // 2. Cake Detail View
+    async function renderCakeDetail(cakeId) {
+      const cake = await fetchAPI(`/cakes/${cakeId}`);
+      let averageData = { averageScore: 0, totalReviews: 0 };
+      
+      try {
+        averageData = await fetchAPI(`/cakes/${cakeId}/ratings/average`);
+      } catch (e) { /* Ignore if empty */ }
+
+      let html = `
+        <button class="secondary" onclick="navigateTo('catalog')" style="margin-bottom: 2rem;">&larr; Back to Catalog</button>
+        <div class="detail-container">
+          <div>
+            <img class="detail-img" src="${cake.imageUrl || 'https://via.placeholder.com/600x400'}" alt="${cake.name}">
+          </div>
+          <div>
+            <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">${cake.name}</h1>
+            <p class="card-category">${cake.category || 'General'}</p>
+            <div style="display: flex; gap: 1rem; align-items: center; margin: 1rem 0;">
+              <span class="card-price" style="font-size: 1.5rem;">$${Number(cake.price).toFixed(2)}</span>
+              <span style="color: var(--text-muted)">
+                ★ ${averageData.averageScore ? Number(averageData.averageScore).toFixed(1) : 'No'} (${averageData.totalReviews || 0} reviews)
+              </span>
+            </div>
+            
+            <p style="color: var(--text-muted); line-height: 1.6; margin-bottom: 2rem;">
+              ${cake.description || 'No description available.'}
+            </p>
+
+            ${cake.isAvailable ? `
+              <div class="action-group">
+                <input type="number" id="qty-input" class="qty-input" value="1" min="1" max="10">
+                <button onclick="addToBasket('${cake.id}')">Add to Basket</button>
+              </div>
+              <p id="action-msg" class="success hidden" style="margin-top: 1rem; color: var(--success);"></p>
+            ` : `
+              <div class="alert" style="background: #fee2e2; color: #dc2626;">Currently Unavailable</div>
+            `}
+          </div>
+        </div>
+
+        <div style="margin-top: 3rem; background: var(--card-bg); padding: 2rem; border-radius: 8px; border: 1px solid var(--border);">
+          <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem;">Customer Reviews</h3>
+          <div id="reviews-container">
+            <p style="color: var(--text-muted);">Loading reviews...</p>
+          </div>
+        </div>
+      `;
+
+      appRoot.innerHTML = html;
+
+      try {
+        const ratingsRes = await fetchAPI(`/cakes/${cakeId}/ratings`);
+        const ratings = Array.isArray(ratingsRes) ? ratingsRes : (ratingsRes.data || ratingsRes.ratings || []);
+        const container = document.getElementById('reviews-container');
+        
+        if (ratings.length === 0) {
+          container.innerHTML = '<p style="color: var(--text-muted);">No reviews yet. Purchase this cake to leave a review!</p>';
+        } else {
+          container.innerHTML = ratings.map(r => `
+            <div style="border-bottom: 1px solid var(--border); padding: 1.25rem 0;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <strong style="font-size: 0.875rem;">Customer ID: ${r.userId ? r.userId.substring(0,8) + '...' : 'Verified Buyer'}</strong>
+                <span style="color: #f59e0b; letter-spacing: 2px;">${'★'.repeat(r.score)}${'☆'.repeat(5-r.score)}</span>
+              </div>
+              <p style="color: var(--text-main); font-size: 0.95rem;">${r.comment || ''}</p>
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        document.getElementById('reviews-container').innerHTML = '<p class="error">Failed to load reviews.</p>';
+      }
+    }
+
+    // 3. Cart View
+    async function renderCart() {
+      const basket = await fetchAPI('/basket');
+      const items = basket.items || [];
+      
+      if (items.length === 0) {
+        appRoot.innerHTML = `
+          <h2>Your Basket</h2>
+          <p style="margin-top: 1rem; color: var(--text-muted);">Your basket is empty.</p>
+          <button style="margin-top: 1rem;" onclick="navigateTo('catalog')">Continue Shopping</button>
+        `;
+        return;
+      }
+
+      let itemsHtml = items.map(item => `
+        <div class="cart-item">
+          <div>
+            <div style="font-weight: 500;">${item.cakeName}</div>
+            <div style="color: var(--text-muted); font-size: 0.875rem;">$${Number(item.unitPrice).toFixed(2)} x ${item.quantity}</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <div style="font-weight: 600;">$${(item.unitPrice * item.quantity).toFixed(2)}</div>
+            <button class="secondary" style="padding: 0.25rem 0.5rem; color: #dc2626;" onclick="removeFromBasket('${item.cakeId}')">Remove</button>
+          </div>
+        </div>
+      `).join('');
+
+      appRoot.innerHTML = `
+        <h2 style="margin-bottom: 1.5rem;">Your Basket</h2>
+        <div class="cart-layout">
+          <div class="cart-items">
+            ${itemsHtml}
+          </div>
+          <div class="summary-box">
+            <div class="summary-row">
+              <span>Total</span>
+              <span>$${Number(basket.totalAmount).toFixed(2)}</span>
+            </div>
+            <div class="input-group">
+              <label for="email-input">Customer Email</label>
+              <input type="email" id="email-input" placeholder="usera@test.com" value="usera@test.com">
+            </div>
+            <button style="width: 100%;" onclick="processCheckout()">Checkout Now</button>
+            <p id="checkout-error" class="error hidden"></p>
+          </div>
+        </div>
+      `;
+    }
+
+    // 4. Order Success View
+    async function renderOrderSuccess(orderId) {
+      appRoot.innerHTML = `
+        <div style="text-align: center; max-width: 600px; margin: 4rem auto;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+          <h2>Order Completed!</h2>
+          <p style="color: var(--text-muted); margin: 1rem 0;">Your order has been placed successfully. Order ID: ${orderId}</p>
+          <button onclick="navigateTo('orders')">View Your Orders</button>
+          
+          <div id="notification-status" style="margin-top: 3rem; text-align: left; background: #f1f5f9; padding: 1.5rem; border-radius: 8px;">
+            <div style="font-weight: 600; margin-bottom: 0.5rem;">System Notifications</div>
+            <p style="font-size: 0.875rem; color: var(--text-muted);">Polling notification service...</p>
+          </div>
+        </div>
+      `;
+
+      let attempts = 0;
+      const poll = setInterval(async () => {
+        attempts++;
+        try {
+          const notifications = await fetchAPI(`/notifications/${orderId}`);
+          if (notifications && notifications.length > 0) {
+            clearInterval(poll);
+            const n = notifications[0];
+            document.getElementById('notification-status').innerHTML = `
+              <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--success);">Email Notification Sent</div>
+              <p style="font-size: 0.875rem;">Status: ${n.status}</p>
+            `;
+          }
+        } catch (e) {
+          if (attempts > 5) clearInterval(poll);
+        }
+      }, 2000);
+    }
+
+    // 5. Render Completed Orders (Handles POST vs PUT detection)
+    async function renderOrders() {
+      let html = `<h2 style="margin-bottom: 1.5rem;">Your Completed Orders</h2>`;
+
+      try {
+        const itemsRes = await fetchAPI('/basket/completed');
+        const items = Array.isArray(itemsRes) ? itemsRes : (itemsRes.data || []);
+
+        if (items.length === 0) {
+          html += `<p style="color: var(--text-muted);">You haven't purchased any cakes yet.</p>`;
+          appRoot.innerHTML = html;
+          return;
+        }
+
+        const uniqueCakeIds = [...new Set(items.map(i => i.cakeId))];
+        const cakeDetails = {};
+        const userRatingsMap = {};
+        
+        // Fetch details and ratings for each cake
+        await Promise.all(
+          uniqueCakeIds.map(async (cakeId) => {
+            try {
+              const cake = await fetchAPI(`/cakes/${cakeId}`);
+              cakeDetails[cakeId] = cake;
+
+              const ratingsRes = await fetchAPI(`/cakes/${cakeId}/ratings`);
+              const ratings = Array.isArray(ratingsRes) ? ratingsRes : (ratingsRes.data || ratingsRes.ratings || []);
+              userRatingsMap[cakeId] = ratings;
+            } catch (err) {
+              console.warn(`Could not fetch data for cake ${cakeId}`, err);
+            }
+          })
+        );
+
+        const ordersMap = {};
+        items.forEach(item => {
+          if (!ordersMap[item.orderId]) {
+            ordersMap[item.orderId] = [];
+          }
+          ordersMap[item.orderId].push(item);
+        });
+
+        Object.entries(ordersMap).forEach(([orderId, orderItems]) => {
+          html += `
+            <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+              <div style="font-weight: 600; margin-bottom: 1rem; color: var(--text-muted);">Order ID: ${orderId}</div>
+              ${orderItems.map(item => {
+                const cake = cakeDetails[item.cakeId] || {};
+                const cakeImg = cake.imageUrl || 'https://via.placeholder.com/80?text=Cake';
+                const escapedName = (item.cakeName || cake.name || 'Cake').replace(/'/g, "\\'");
+                
+                // Check if current user already rated this cake
+                const ratings = userRatingsMap[item.cakeId] || [];
+                const existingRating = ratings.find(r => r.userId === USER_ID);
+                const isRated = !!existingRating;
+
+                const escapedComment = isRated ? (existingRating.comment || '').replace(/'/g, "\\'") : '';
+
+                return `
+                  <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; border-top: 1px solid var(--border); gap: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                      <img src="${cakeImg}" alt="${item.cakeName}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border);" />
+                      <div>
+                        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.25rem;">
+                          ${item.cakeName}
+                          ${isRated ? `<span class="badge-rated" style="margin-left: 0.5rem;">★ ${existingRating.score}/5</span>` : ''}
+                        </div>
+                        <div style="font-size: 0.875rem; color: var(--text-muted);">
+                          Quantity: ${item.quantity} | Price: $${Number(item.unitPrice).toFixed(2)}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    ${isRated ? `
+                      <!-- PUT Request Flow: Cake is already rated -->
+                      <button class="secondary" onclick="navigateTo('rate', { cakeId: '${item.cakeId}', cakeName: '${escapedName}', ratingId: '${existingRating.id}', score: ${existingRating.score}, comment: '${escapedComment}', isEdit: true })">
+                        Edit Review
+                      </button>
+                    ` : `
+                      <!-- POST Request Flow: New rating -->
+                      <button class="secondary" onclick="navigateTo('rate', { cakeId: '${item.cakeId}', cakeName: '${escapedName}', isEdit: false })">
+                        Write Review
+                      </button>
+                    `}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `;
+        });
+      } catch (error) {
+        html += `
+          <div class="alert" style="background: #fee2e2; color: #dc2626;">
+            Failed to load completed orders: ${error.message}
+          </div>`;
+      }
+
+      appRoot.innerHTML = html;
+    }
+
+    // 6. Render My Reviews View (Lists user's submitted reviews for editing via PUT)
+    async function renderMyReviews() {
+      let html = `<h2 style="margin-bottom: 1.5rem;">My Submitted Reviews</h2>`;
+
+      try {
+        const itemsRes = await fetchAPI('/basket/completed');
+        const items = Array.isArray(itemsRes) ? itemsRes : (itemsRes.data || []);
+        const uniqueCakeIds = [...new Set(items.map(i => i.cakeId))];
+
+        let myReviews = [];
+
+        await Promise.all(
+          uniqueCakeIds.map(async (cakeId) => {
+            try {
+              const cake = await fetchAPI(`/cakes/${cakeId}`);
+              const ratingsRes = await fetchAPI(`/cakes/${cakeId}/ratings`);
+              const ratings = Array.isArray(ratingsRes) ? ratingsRes : (ratingsRes.data || ratingsRes.ratings || []);
+              
+              const userRating = ratings.find(r => r.userId === USER_ID);
+              if (userRating) {
+                myReviews.push({
+                  ratingId: userRating.id,
+                  score: userRating.score,
+                  comment: userRating.comment,
+                  cakeId: cakeId,
+                  cakeName: cake.name || 'Cake',
+                  cakeImg: cake.imageUrl || 'https://via.placeholder.com/80?text=Cake'
+                });
+              }
+            } catch (e) {
+              console.warn(`Error fetching review for cake ${cakeId}`, e);
+            }
+          })
+        );
+
+        if (myReviews.length === 0) {
+          html += `<p style="color: var(--text-muted);">You haven't written any reviews yet. Complete an order to review a cake!</p>`;
+        } else {
+          myReviews.forEach(rev => {
+            const escapedName = rev.cakeName.replace(/'/g, "\\'");
+            const escapedComment = (rev.comment || '').replace(/'/g, "\\'");
+            html += `
+              <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                  <img src="${rev.cakeImg}" alt="${rev.cakeName}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border);" />
+                  <div>
+                    <div style="font-weight: 600; font-size: 1.05rem;">${rev.cakeName}</div>
+                    <div style="color: #f59e0b; margin: 0.25rem 0; font-weight: 500;">
+                      ${'★'.repeat(rev.score)}${'☆'.repeat(5 - rev.score)} (${rev.score}/5)
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">${rev.comment || 'No comment provided.'}</p>
+                  </div>
+                </div>
+                <button class="secondary" onclick="navigateTo('rate', { cakeId: '${rev.cakeId}', cakeName: '${escapedName}', ratingId: '${rev.ratingId}', score: ${rev.score}, comment: '${escapedComment}', isEdit: true })">
+                  Edit Review
+                </button>
+              </div>
+            `;
+          });
+        }
+      } catch (error) {
+        html += `<div class="alert" style="background: #fee2e2; color: #dc2626;">Failed to load reviews: ${error.message}</div>`;
+      }
+
+      appRoot.innerHTML = html;
+    }
+
+    // 7. Dynamic Write/Edit Review Form
+    async function renderRateView(cakeData) {
+      const isEdit = cakeData.isEdit;
+      const currentScore = cakeData.score || 5;
+      const currentComment = cakeData.comment || '';
+
+      appRoot.innerHTML = `
+        <button class="secondary" onclick="navigateTo('orders')" style="margin-bottom: 2rem;">&larr; Back to Orders</button>
+        <div style="max-width: 600px; background: var(--card-bg); padding: 2rem; border-radius: 8px; border: 1px solid var(--border);">
+          <h2 style="margin-bottom: 0.5rem;">${isEdit ? 'Update Your Review' : 'Write a Review'}</h2>
+          <p style="color: var(--text-muted); margin-bottom: 2rem; font-weight: 500;">${cakeData.cakeName}</p>
+          
+          <div class="input-group">
+            <label>Rating Score (1-5)</label>
+            <select id="review-score">
+              <option value="5" ${currentScore === 5 ? 'selected' : ''}>5 - Excellent (⭐⭐⭐⭐⭐)</option>
+              <option value="4" ${currentScore === 4 ? 'selected' : ''}>4 - Very Good (⭐⭐⭐⭐)</option>
+              <option value="3" ${currentScore === 3 ? 'selected' : ''}>3 - Good (⭐⭐⭐)</option>
+              <option value="2" ${currentScore === 2 ? 'selected' : ''}>2 - Fair (⭐⭐)</option>
+              <option value="1" ${currentScore === 1 ? 'selected' : ''}>1 - Poor (⭐)</option>
+            </select>
+          </div>
+          
+          <div class="input-group">
+            <label>Your Comment</label>
+            <textarea id="review-comment" rows="4" placeholder="What did you think about this cake?">${currentComment}</textarea>
+          </div>
+          
+          <button onclick="submitReview('${cakeData.cakeId}', '${cakeData.ratingId || ''}', ${isEdit})" style="width: 100%;">
+            ${isEdit ? 'Update Review (PUT)' : 'Submit Review (POST)'}
+          </button>
+          <div id="review-msg" class="hidden" style="margin-top: 1rem; text-align: center; font-weight: 500;"></div>
+        </div>
+      `;
+    }
+
+    // Handles POST for creation and PUT for updates
+    async function submitReview(cakeId, ratingId = '', isEdit = false) {
+      const score = parseInt(document.getElementById('review-score').value, 10);
+      const comment = document.getElementById('review-comment').value;
+      const msgEl = document.getElementById('review-msg');
+      
+      try {
+        const endpoint = isEdit ? `/cakes/${cakeId}/ratings/${ratingId}` : `/cakes/${cakeId}/ratings`;
+        const method = isEdit ? 'PUT' : 'POST';
+
+        await fetchAPI(endpoint, {
+          method,
+          body: JSON.stringify({ score, comment })
+        });
+        
+        msgEl.textContent = isEdit ? 'Review updated successfully!' : 'Review submitted successfully!';
+        msgEl.style.color = 'var(--success)';
+        msgEl.classList.remove('hidden');
+        
+        setTimeout(() => navigateTo('orders'), 1500);
+      } catch (error) {
+        msgEl.textContent = error.message;
+        msgEl.style.color = '#dc2626';
+        msgEl.classList.remove('hidden');
+      }
+    }
+
+    // Helper Cart Actions
+    async function updateBasketCount() {
+      try {
+        const basket = await fetchAPI('/basket');
+        const count = (basket.items || []).reduce((acc, item) => acc + item.quantity, 0);
+        cartCountEl.textContent = count;
+      } catch (e) {
+        console.warn('Could not load basket count');
+      }
+    }
+
+    async function addToBasket(cakeId) {
+      const qty = parseInt(document.getElementById('qty-input').value, 10);
+      try {
+        await fetchAPI('/basket/items', {
+          method: 'POST',
+          body: JSON.stringify({ cakeId, quantity: qty })
+        });
+        const msg = document.getElementById('action-msg');
+        msg.textContent = 'Added to basket!';
+        msg.classList.remove('hidden');
+        setTimeout(() => msg.classList.add('hidden'), 3000);
+        updateBasketCount();
+      } catch (error) {
+        alert('Failed to add to basket: ' + error.message);
+      }
+    }
+
+    async function removeFromBasket(cakeId) {
+      try {
+        await fetchAPI(`/basket/items/${cakeId}`, { method: 'DELETE' });
+        await navigateTo('cart');
+      } catch (error) {
+        alert('Failed to remove item: ' + error.message);
+      }
+    }
+
+    async function processCheckout() {
+      const email = document.getElementById('email-input').value;
+      const errEl = document.getElementById('checkout-error');
+      
+      if (!email) {
+        errEl.textContent = "Email is required";
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        const orderData = await fetchAPI('/orders/checkout', {
+          method: 'POST',
+          body: JSON.stringify({ customerEmail: email })
+        });
+        
+        const orderId = orderData.id || orderData.orderId;
+        navigateTo('order-success', orderId);
+      } catch (error) {
+        errEl.textContent = error.message;
+        errEl.classList.remove('hidden');
+      }
+    }
+
+    // Initialize Application
+    navigateTo('catalog');
+
+  </script>
+</body>
+</html>

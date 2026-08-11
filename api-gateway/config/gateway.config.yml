@@ -1,0 +1,105 @@
+http:
+  port: 5000
+
+apiEndpoints:
+  # More specific path patterns MUST be listed before broader ones that could also match —
+  # Express Gateway checks pipelines in declaration order and uses the first match.
+  ratingApi:
+    host: '*'
+    paths: '/api/v1/cakes/*/ratings*'
+  catalogApi:
+    host: '*'
+    paths: '/api/v1/cakes*'
+  orderApi:
+    host: '*'
+    paths:
+      - '/api/v1/basket*'
+      - '/api/v1/orders*'
+  notificationApi:
+    host: '*'
+    paths: '/api/v1/notifications*'
+
+serviceEndpoints:
+  catalogService:
+    url: 'http://catalog-service:5001'
+  ratingService:
+    url: 'http://rating-service:5003'
+  orderService:
+    url: 'http://order-service:5002'
+  notificationService:
+    url: 'http://notification-service:5004'
+
+policies:
+  - cors
+  - rate-limit
+  - proxy
+  - log
+
+pipelines:
+  ratingPipeline:
+    apiEndpoints:
+      - ratingApi
+    policies:
+      - cors:
+          - action:
+              origin: 'http://localhost:5500'
+              methods: 'GET,POST,PUT,PATCH,DELETE,OPTIONS'
+              allowedHeaders: 'Content-Type,X-User-Id,x-request-id'
+      # - rate-limit:
+      #     - action:
+      #         max: 100
+      #         windowMs: 60000
+      - proxy:
+          - action:
+              serviceEndpoint: ratingService
+              changeOrigin: true
+
+  catalogPipeline:
+    apiEndpoints:
+      - catalogApi
+    policies:
+      - cors:
+          - action:
+              origin: 'http://localhost:5500'
+              methods: 'GET,POST,PUT,DELETE,OPTIONS'
+              allowedHeaders: 'Content-Type,X-User-Id,x-request-id'
+      # - rate-limit:
+      #     - action:
+      #         max: 100
+      #         windowMs: 60000
+      - proxy:
+          - action:
+              serviceEndpoint: catalogService
+              changeOrigin: true
+
+  orderPipeline:
+    apiEndpoints:
+      - orderApi
+    policies:
+      - cors:
+          - action:
+              origin: 'http://localhost:5500'
+              methods: 'GET,POST,PATCH,DELETE,OPTIONS'
+              allowedHeaders: 'Content-Type,X-User-Id,x-request-id'
+      # - rate-limit:
+      #     - action:
+      #         max: 50
+      #         windowMs: 60000
+      - proxy:
+          - action:
+              serviceEndpoint: orderService
+              changeOrigin: true
+
+  notificationPipeline:
+    apiEndpoints:
+      - notificationApi
+    policies:
+      - cors:
+          - action:
+              origin: 'http://localhost:5500'
+              methods: 'GET,OPTIONS'
+              allowedHeaders: 'Content-Type,X-User-Id,x-request-id'
+      - proxy:
+          - action:
+              serviceEndpoint: notificationService
+              changeOrigin: true
