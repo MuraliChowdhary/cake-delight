@@ -43,10 +43,7 @@ async function connect() {
 
     logger.info('RabbitMQ connected and channel established.');
   } catch (err) {
-    logger.error(
-      { err },
-      'Failed to connect to RabbitMQ. Retrying...',
-    );
+    logger.error({ err }, 'Failed to connect to RabbitMQ. Retrying...');
 
     connection = null;
     channel = null;
@@ -61,9 +58,7 @@ async function connect() {
 
 function getChannel() {
   if (!channel) {
-    throw new Error(
-      'RabbitMQ channel is not available. Connection may be down.',
-    );
+    throw new Error('RabbitMQ channel is not available. Connection may be down.');
   }
 
   return channel;

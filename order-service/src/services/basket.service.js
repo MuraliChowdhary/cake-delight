@@ -65,9 +65,17 @@ async function removeItem(userId, cakeId) {
   return getBasket(userId);
 }
 
+async function getCompletedItems(userId){
+   const orders = await orderRepository.getCompletedItems(userId);
+   if (!orders) {
+  throw new AppError('You have not purchased any items yet', 404);
+  }
+   return orders;
+}
 module.exports = {
   getBasket,
   addItem,
   updateItemQuantity,
   removeItem,
+  getCompletedItems
 };

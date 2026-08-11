@@ -15,7 +15,7 @@ app.use(helmet());
 app.use(cors({
     origin: env.nodeEnv === 'production' ? process.env.ALLOWED_ORIGIN || false : '*',
     methods: ['GET','POST','PUT','DELETE','OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-request-id'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-User-Id','x-request-id'],
 }));
 
 app.use(express.json({limit:'10kb'}));

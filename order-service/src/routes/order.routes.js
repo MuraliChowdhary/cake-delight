@@ -13,6 +13,7 @@ const {
   addItemHandler,
   updateItemHandler,
   removeItemHandler,
+  getCompletedItemsHandler,
 } = require('../controllers/basket.controller');
 
 const { checkoutHandler, getOrderHandler } = require('../controllers/order.controller');
@@ -20,11 +21,13 @@ const { checkoutHandler, getOrderHandler } = require('../controllers/order.contr
 const router = express.Router();
 
 router.get('/basket', extractUser, getBasketHandler);
+router.get('/basket/completed', extractUser, getCompletedItemsHandler);
 router.post('/basket/items', extractUser, validate(addItemSchema), addItemHandler);
 router.patch('/basket/items/:cakeId', extractUser, validate(updateItemSchema), updateItemHandler);
 router.delete('/basket/items/:cakeId', extractUser, validate(removeItemSchema), removeItemHandler);
 
 router.post('/orders/checkout', extractUser, validate(checkoutSchema), checkoutHandler);
 router.get('/orders/:id', extractUser, validate(orderIdParamsSchema), getOrderHandler);
+
 
 module.exports = router;

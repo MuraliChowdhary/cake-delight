@@ -68,6 +68,23 @@ async function getItems(orderId) {
   return rows.map(mapItem);
 }
 
+async function getCompletedItems(userId) {
+  const { rows } = await pool.query(
+    `
+      SELECT oi.*
+      FROM order_items oi
+      INNER JOIN orders o
+        ON o.id = oi.order_id
+      WHERE o.user_id = $1
+        AND o.status = 'completed'
+      ORDER BY oi.created_at ASC
+    `,
+    [userId]
+  );
+
+  return rows.map(mapItem);
+}
+
 async function upsertItem(orderId, { cakeId, cakeName, unitPrice, quantity }) {
   const query = `
     INSERT INTO order_items (order_id, cake_id, cake_name, unit_price, quantity)
@@ -153,4 +170,5 @@ module.exports = {
   removeItem,
   recalculateTotal,
   completeOrder,
+  getCompletedItems
 };

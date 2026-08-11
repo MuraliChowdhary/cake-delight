@@ -6,10 +6,9 @@ dotenv.config();
 const env = {
   port: parseInt(process.env.PORT || '5002', 10),
   nodeEnv: process.env.NODE_ENV || 'development',
-  catalogServiceUrl: process.env.CATALOG_SERVICE_URL || 'http://localhost:5001',
-  rabbitmqUrl: process.env.RABBITMQ_URL || 'amqp://cakeuser:cakepass@rabbitmq:5672',
-  databaseUrl:
-    process.env.DATABASE_URL || 'postgres://order_user:order_pass@localhost:5434/order_db',
+  catalogServiceUrl: process.env.CATALOG_SERVICE_URL,
+  rabbitmqUrl: process.env.RABBITMQ_URL,
+  databaseUrl: process.env.DATABASE_URL,
 };
 
 if (!process.env.DATABASE_URL && env.nodeEnv === 'production') {
