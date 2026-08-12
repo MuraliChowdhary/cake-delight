@@ -2,12 +2,15 @@ const cakeRepository = require('../repositories/cake.repository');
 const AppError = require('../utils/app-error');
 const cache = require('../utils/cache');
 
-const LIST_TTL = 60;      // seconds — lists change more often, shorter TTL
-const DETAIL_TTL = 300;   // seconds — single-cake detail is more stable
+const LIST_TTL = 60; // seconds — lists change more often, shorter TTL
+const DETAIL_TTL = 300; // seconds — single-cake detail is more stable
 
 function listCacheKey(filters) {
   // deterministic key regardless of key order in the filters object
-  const sorted = Object.keys(filters).sort().map((k) => `${k}=${filters[k] ?? ''}`).join('&');
+  const sorted = Object.keys(filters)
+    .sort()
+    .map((k) => `${k}=${filters[k] ?? ''}`)
+    .join('&');
   return `catalog:list:${sorted}`;
 }
 
