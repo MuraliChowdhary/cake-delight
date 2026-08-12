@@ -1,6 +1,6 @@
 const ratingRepository = require('../repositories/rating.repository');
 const AppError = require('../utils/app-error');
-const cache = require("../utils/cache");
+const cache = require('../utils/cache');
 
 const AVERAGE_TTL = 60;
 
@@ -26,8 +26,10 @@ async function createRating(cakeId, userId, ratingData) {
 
 async function updateRating(ratingId, cakeId, userId, updateRatingData) {
   const existingRating = await ratingRepository.findById(ratingId, cakeId);
-  if (!existingRating) throw new AppError(`Rating with ID '${ratingId}' not found for this cake`, 404);
-  if (existingRating.userId !== userId) throw new AppError('You can only update your own rating', 403);
+  if (!existingRating)
+    throw new AppError(`Rating with ID '${ratingId}' not found for this cake`, 404);
+  if (existingRating.userId !== userId)
+    throw new AppError('You can only update your own rating', 403);
 
   const updated = await ratingRepository.update(ratingId, updateRatingData);
   await cache.del(`rating:average:${cakeId}`);
@@ -36,8 +38,10 @@ async function updateRating(ratingId, cakeId, userId, updateRatingData) {
 
 async function deleteRating(ratingId, cakeId, userId) {
   const existingRating = await ratingRepository.findById(ratingId, cakeId);
-  if (!existingRating) throw new AppError(`Rating with ID '${ratingId}' not found for this cake`, 404);
-  if (existingRating.userId !== userId) throw new AppError('You can only delete your own rating', 403);
+  if (!existingRating)
+    throw new AppError(`Rating with ID '${ratingId}' not found for this cake`, 404);
+  if (existingRating.userId !== userId)
+    throw new AppError('You can only delete your own rating', 403);
 
   const result = await ratingRepository.remove(ratingId);
   await cache.del(`rating:average:${cakeId}`);
