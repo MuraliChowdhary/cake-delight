@@ -1,22 +1,15 @@
 const express = require('express');
-const cors = require('cors');
 const helmet = require('helmet');
 const requestLogger = require('./src/middlewares/request-logger');
 const requestMiddleware = require('./src/middlewares/request-id')
 const errorHandler = require('./src/middlewares/error-handler');
 const healthRouter = require('./src/routes/health.routes');
 const orderRouter = require('./src/routes/order.routes');
-const env = require('./src/config/env');
 
 const app = express();
 
 app.use(helmet());
 
-app.use(cors({
-    origin: env.nodeEnv === 'production' ? process.env.ALLOWED_ORIGIN || false : '*',
-    methods: ['GET','POST','PUT','DELETE','OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-User-Id','x-request-id'],
-}));
 
 app.use(express.json({limit:'10kb'}));
 app.use(express.urlencoded({extended:true,limit:'10kb'}));
