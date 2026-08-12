@@ -395,7 +395,9 @@ The second was more subtle. Notification Service wasn't saving anything to its d
 
 ## 14. Public Deployment
 
-This project runs locally, on a Kind cluster on the developer's own machine. It hasn't been deployed to a public cloud environment, so there's no public URL to share here.
+This project is running locally on a Kind Kubernetes cluster on the developer's machine. It has not been deployed to a public cloud environment, so there is currently no public URL available. The complete source code, configuration files, Docker setup, and Kubernetes manifests have been uploaded to GitHub. You can find them at the following link: 
+
+**GitHub:** [Cake Delight Repository](https://github.com/MuraliChowdhary/cake-delight).
 
 ---
 
