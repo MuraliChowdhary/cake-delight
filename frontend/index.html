@@ -1,197 +1,753 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cake Delight</title>
-  <style>
-    /* Clean Enterprise-style CSS */
-    :root {
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --success: #16a34a;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cake Delight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650;9..144,760&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAF9F6;
+    --surface: #FFFFFF;
+    --surface-muted: #F4F2EE;
+    --border: #E9E5DE;
+    --border-strong: #DCD7CE;
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background-color: var(--bg);
-      color: var(--text-main);
-      line-height: 1.5;
-    }
+    --ink: #211E1B;
+    --ink-soft: #55504A;
+    --ink-faint: #8B857C;
 
-    /* Navbar */
-    header {
-      background-color: var(--card-bg);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
+    --accent: #B3255A;
+    --accent-dark: #8F1D48;
+    --accent-tint: #FBE8EE;
+    --accent-tint-strong: #F6D2DE;
 
-    .nav-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    --gold: #B8862E;
+    --gold-tint: #FBF2DF;
 
-    .brand {
-      font-size: 1.25rem;
-      font-weight: 600;
-      cursor: pointer;
-      color: var(--text-main);
-    }
+    --success: #2F7A4D;
+    --success-tint: #E7F4EB;
+    --danger: #C23B3B;
+    --danger-tint: #FBEAEA;
 
-    .nav-actions {
-      display: flex;
-      gap: 0.75rem;
-      align-items: center;
-    }
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-full: 999px;
 
-    .user-badge {
-      font-size: 0.875rem;
-      color: var(--text-muted);
-      background: var(--bg);
-      padding: 0.25rem 0.75rem;
-      border-radius: 4px;
-      border: 1px solid var(--border);
-    }
+    --shadow-sm: 0 1px 2px rgba(33, 30, 27, 0.04), 0 1px 1px rgba(33, 30, 27, 0.03);
+    --shadow-md: 0 10px 24px -12px rgba(33, 30, 27, 0.16);
+    --shadow-lg: 0 24px 48px -20px rgba(33, 30, 27, 0.22);
 
-    button {
-      background-color: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    button:hover { background-color: var(--primary-hover); }
-    button.secondary { background-color: var(--bg); color: var(--text-main); border: 1px solid var(--border); }
-    button.secondary:hover { background-color: var(--border); }
-    
-    /* Layout */
-    main {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 0 2rem;
-    }
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
 
-    /* Catalog Grid */
-    .catalog-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; }
 
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.2s;
-      cursor: pointer;
-    }
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    }
+  body {
+    font-family: var(--font-body);
+    background-color: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    font-size: 15px;
+  }
 
-    .card-img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      background-color: var(--border);
-    }
+  ::selection { background: var(--accent-tint-strong); color: var(--accent-dark); }
 
-    .card-content { padding: 1.25rem; }
-    .card-title { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; }
-    .card-category { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;}
-    .card-price { font-size: 1.25rem; font-weight: 600; color: var(--text-main); }
-    .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
+  a { color: inherit; }
 
-    /* Detail View */
-    .detail-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 3rem;
-      background: var(--card-bg);
-      padding: 2rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-    }
-    .detail-img { width: 100%; height: auto; border-radius: 8px; }
-    .action-group { display: flex; gap: 1rem; margin-top: 2rem; align-items: center; }
-    .qty-input { width: 60px; padding: 0.5rem; border: 1px solid var(--border); border-radius: 6px; text-align: center; }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 
-    /* Cart / Checkout */
-    .cart-layout {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 2rem;
-    }
-    .cart-items { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; }
-    .cart-item { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--border); }
-    .cart-item:last-child { border-bottom: none; }
-    .summary-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; height: fit-content; }
-    .summary-row { display: flex; justify-content: space-between; margin-bottom: 1rem; font-weight: 600; font-size: 1.25rem; }
-    .input-group { margin-bottom: 1.5rem; }
-    .input-group label { display: block; margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 500; }
-    .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; }
-    
-    /* Utilities */
-    .hidden { display: none !important; }
-    .alert { padding: 1rem; background: #dcfce7; color: var(--success); border-radius: 6px; margin-bottom: 1rem; }
-    .error { color: #dc2626; margin-top: 0.5rem; font-size: 0.875rem; }
-    .badge-rated {
-      background: #fef3c7;
-      color: #b45309;
-      font-size: 0.8rem;
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      font-weight: 600;
-    }
-  </style>
+  header {
+    background-color: rgba(250, 249, 246, 0.85);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+
+  .nav-container {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0.9rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .brand {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    color: var(--ink);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .brand::before {
+    content: "";
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  /* Header search */
+  .header-search {
+    flex: 1;
+    max-width: 420px;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .header-search svg {
+    position: absolute;
+    left: 14px;
+    width: 16px;
+    height: 16px;
+    color: var(--ink-faint);
+    pointer-events: none;
+  }
+  .header-search input {
+    width: 100%;
+    padding: 0.55rem 0.9rem 0.55rem 2.4rem;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--ink);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .header-search input::placeholder { color: var(--ink-faint); }
+  .header-search input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-tint);
+  }
+
+  .nav-actions {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    margin-left: auto;
+  }
+
+  .user-badge {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    background: var(--surface-muted);
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .user-chip-wrap { position: relative; }
+  .user-badge-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+  .user-badge-btn:hover { background: var(--surface); border-color: var(--border-strong); }
+  .user-badge-btn .edit-pencil { width: 11px; height: 11px; color: var(--ink-faint); flex-shrink: 0; }
+
+  .user-editor {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    width: 260px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: 1.1rem;
+    z-index: 30;
+  }
+  .user-editor label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-bottom: 0.4rem;
+  }
+  .user-editor input {
+    width: 100%;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 0.87rem;
+    color: var(--ink);
+    background: var(--surface);
+  }
+  .user-editor input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-tint);
+  }
+  .user-editor-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.85rem;
+  }
+  .user-editor-actions button { flex: 1; padding: 0.5rem 0.7rem; font-size: 0.8rem; }
+  .user-editor-hint {
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    margin-top: 0.75rem;
+    line-height: 1.45;
+  }
+
+  .notif-wrap { position: relative; }
+  .notif-bell {
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    color: var(--ink-soft);
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0;
+    position: relative;
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  }
+  .notif-bell:hover { background: var(--surface-muted); border-color: var(--border-strong); }
+  .notif-bell svg { width: 18px; height: 18px; }
+  .notif-bell.has-ring { animation: bell-ring 0.5s ease; }
+  @keyframes bell-ring {
+    0%, 100% { transform: rotate(0); }
+    20% { transform: rotate(-14deg); }
+    40% { transform: rotate(11deg); }
+    60% { transform: rotate(-7deg); }
+    80% { transform: rotate(4deg); }
+  }
+
+  .notif-badge {
+    position: absolute;
+    top: -3px; right: -3px;
+    min-width: 17px; height: 17px;
+    padding: 0 4px;
+    border-radius: var(--radius-full);
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--bg);
+    line-height: 1;
+  }
+
+  .notif-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 340px;
+    max-height: 420px;
+    overflow-y: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 30;
+  }
+  .notif-dropdown-head {
+    padding: 0.9rem 1.1rem;
+    border-bottom: 1px solid var(--border);
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; background: var(--surface);
+  }
+  .notif-dropdown-head span.count-label { color: var(--ink-faint); font-weight: 500; font-size: 0.78rem; }
+  .notif-empty {
+    padding: 2.5rem 1.25rem;
+    text-align: center;
+    color: var(--ink-faint);
+    font-size: 0.85rem;
+  }
+  .notif-empty .emoji { font-size: 1.6rem; margin-bottom: 0.5rem; }
+  .notif-item {
+    display: flex; gap: 0.7rem;
+    padding: 0.85rem 1.1rem;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background-color 0.12s ease;
+  }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-item:hover { background: var(--surface-muted); }
+  .notif-item.unread { background: var(--accent-tint); }
+  .notif-item.unread:hover { background: var(--accent-tint-strong); }
+  .notif-icon {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    background: var(--success-tint); color: var(--success);
+    display: flex; align-items: center; justify-content: center; font-size: 0.9rem;
+  }
+  .notif-item-body { flex: 1; min-width: 0; }
+  .notif-item-title { font-size: 0.85rem; font-weight: 600; color: var(--ink); margin-bottom: 0.15rem; }
+  .notif-item-sub { font-size: 0.78rem; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+  .notif-item-time { font-size: 0.72rem; color: var(--ink-faint); white-space: nowrap; flex-shrink: 0; }
+
+  button {
+    background-color: var(--ink);
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.1rem;
+    border-radius: var(--radius-full);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+    letter-spacing: 0.01em;
+  }
+  button:hover { background-color: #000; }
+  button:active { transform: translateY(1px); }
+  button.secondary {
+    background-color: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--border-strong);
+  }
+  button.secondary:hover { background-color: var(--surface-muted); }
+  button.accent { background-color: var(--accent); }
+  button.accent:hover { background-color: var(--accent-dark); }
+  button.danger-ghost {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid transparent;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.78rem;
+  }
+  button.danger-ghost:hover { background: var(--danger-tint); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 2.25rem 2rem 5rem;
+  }
+
+  .page-heading {
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.35rem;
+  }
+  .page-subtext { color: var(--ink-soft); font-size: 0.92rem; margin-bottom: 1.75rem; }
+
+  .filter-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.75rem;
+  }
+  .pill {
+    padding: 0.42rem 0.95rem;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--ink-soft);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .pill:hover { border-color: var(--accent); color: var(--accent-dark); }
+  .pill.active {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+  }
+
+  .results-meta {
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    margin-bottom: 1rem;
+  }
+
+  .catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-strong);
+  }
+
+  .card-img-wrap { position: relative; background: var(--surface-muted); }
+  .card-img {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    display: block;
+    background-color: var(--surface-muted);
+  }
+  .card-rating-float {
+    position: absolute;
+    top: 0.65rem;
+    right: 0.65rem;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(4px);
+    color: var(--gold);
+    font-size: 0.74rem;
+    font-weight: 700;
+    padding: 0.22rem 0.55rem;
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .card-content { padding: 1.1rem 1.15rem 1.25rem; display: flex; flex-direction: column; gap: 0.4rem; flex: 1; }
+  .card-category {
+    font-size: 0.68rem;
+    color: var(--accent-dark);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+  }
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--ink);
+  }
+  .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 0.6rem; }
+  .card-price { font-size: 1.05rem; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .status-tag {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-full);
+  }
+  .status-tag.in-stock { color: var(--success); background: var(--success-tint); }
+  .status-tag.out-stock { color: var(--danger); background: var(--danger-tint); }
+
+  .empty-state, .error-state {
+    text-align: center;
+    padding: 4rem 1.5rem;
+    color: var(--ink-soft);
+    background: var(--surface);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-lg);
+  }
+  .empty-state .emoji, .error-state .emoji { font-size: 2.2rem; margin-bottom: 0.75rem; }
+  .empty-state h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; margin-bottom: 0.35rem; color: var(--ink); }
+  .error-state { border: 1px solid var(--danger-tint); background: var(--danger-tint); color: var(--danger); }
+
+  .loading-row { display: flex; align-items: center; gap: 0.6rem; color: var(--ink-faint); font-size: 0.9rem; padding: 3rem 0; justify-content: center; }
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid var(--border-strong);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .back-link {
+    background: transparent;
+    color: var(--ink-soft);
+    border: none;
+    padding: 0.3rem 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .back-link:hover { color: var(--ink); background: transparent; }
+
+  .detail-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    background: var(--surface);
+    padding: 2rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+  .detail-img { width: 100%; height: 100%; max-height: 460px; object-fit: cover; border-radius: var(--radius-md); }
+  .detail-category { font-size: 0.72rem; color: var(--accent-dark); font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem; }
+  .detail-title { font-family: var(--font-display); font-size: 2.1rem; font-weight: 650; letter-spacing: -0.01em; margin-bottom: 0.6rem; }
+  .detail-meta-row { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.4rem; }
+  .detail-price { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .detail-rating { color: var(--ink-faint); font-size: 0.88rem; }
+  .detail-desc { color: var(--ink-soft); line-height: 1.7; margin-bottom: 2rem; font-size: 0.95rem; }
+
+  .action-group { display: flex; gap: 0.75rem; align-items: center; }
+  .qty-input {
+    width: 64px; padding: 0.6rem;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+  }
+  .qty-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-tint); }
+
+  .unavailable-banner {
+    background: var(--danger-tint); color: var(--danger);
+    padding: 0.75rem 1rem; border-radius: var(--radius-sm);
+    font-weight: 600; font-size: 0.88rem;
+  }
+
+  .inline-success { margin-top: 1rem; color: var(--success); font-size: 0.88rem; font-weight: 600; }
+
+  .reviews-panel {
+    margin-top: 2.5rem;
+    background: var(--surface);
+    padding: 1.75rem 2rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+  }
+  .reviews-panel h3 { font-family: var(--font-display); font-size: 1.2rem; font-weight: 650; margin-bottom: 1.25rem; }
+  .review-row { display: flex; gap: 0.9rem; padding: 1.1rem 0; border-top: 1px solid var(--border); }
+  .review-row:first-of-type { border-top: none; padding-top: 0; }
+  .review-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--accent-tint); color: var(--accent-dark);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.78rem; font-weight: 700; flex-shrink: 0;
+  }
+  .review-body { flex: 1; }
+  .review-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem; gap: 0.5rem; }
+  .review-name { font-size: 0.85rem; font-weight: 600; color: var(--ink); }
+  .review-stars { color: var(--gold); letter-spacing: 1px; font-size: 0.85rem; }
+  .review-comment { color: var(--ink-soft); font-size: 0.9rem; line-height: 1.55; }
+  .review-empty { color: var(--ink-faint); font-size: 0.9rem; }
+
+  .cart-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: start; }
+  .cart-items { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 0.5rem 1.5rem; }
+  .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 1.1rem 0; border-bottom: 1px solid var(--border); gap: 1rem; }
+  .cart-item:last-child { border-bottom: none; }
+  .cart-item-name { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.2rem; }
+  .cart-item-sub { color: var(--ink-faint); font-size: 0.83rem; font-variant-numeric: tabular-nums; }
+  .cart-item-total { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .qty-stepper {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .qty-btn {
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--surface);
+    color: var(--ink);
+    border: none;
+    padding: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+  .qty-btn:hover:not(:disabled) { background: var(--surface-muted); }
+  .qty-btn:disabled { color: var(--ink-faint); cursor: not-allowed; }
+  .qty-value {
+    min-width: 30px;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+  }
+
+  .summary-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.75rem; }
+  .summary-row { display: flex; justify-content: space-between; margin-bottom: 1.4rem; font-weight: 700; font-size: 1.25rem; font-family: var(--font-display); }
+  .input-group { margin-bottom: 1.5rem; }
+  .input-group label { display: block; margin-bottom: 0.45rem; font-size: 0.82rem; font-weight: 600; color: var(--ink-soft); }
+  .input-group input, .input-group select, .input-group textarea {
+    width: 100%; padding: 0.65rem 0.8rem;
+    border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+    font-family: var(--font-body); font-size: 0.9rem; color: var(--ink);
+    background: var(--surface);
+  }
+  .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+    outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-tint);
+  }
+  .full-width { width: 100%; }
+
+  .success-panel { text-align: center; max-width: 560px; margin: 3rem auto; }
+  .success-icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--success-tint); color: var(--success);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; margin: 0 auto 1.25rem;
+  }
+  .success-panel h2 { font-family: var(--font-display); font-size: 1.6rem; font-weight: 650; }
+  .order-id-chip {
+    display: inline-block; margin-top: 0.75rem; font-size: 0.8rem;
+    color: var(--ink-soft); background: var(--surface-muted);
+    border: 1px solid var(--border); padding: 0.3rem 0.75rem; border-radius: var(--radius-full);
+    font-variant-numeric: tabular-nums;
+  }
+  .notify-panel {
+    margin-top: 2.5rem; text-align: left; background: var(--surface);
+    border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-md);
+  }
+  .notify-title { font-weight: 700; margin-bottom: 0.4rem; font-size: 0.92rem; }
+
+  .order-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem 1.75rem; margin-bottom: 1.25rem; }
+  .order-card-head { font-weight: 700; margin-bottom: 0.9rem; color: var(--ink-soft); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .order-line { display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; border-top: 1px solid var(--border); gap: 1rem; flex-wrap: wrap; }
+  .order-line:first-of-type { border-top: none; }
+  .order-line-left { display: flex; align-items: center; gap: 1rem; }
+  .order-thumb { width: 64px; height: 64px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border); flex-shrink: 0; }
+  .order-item-name { font-weight: 650; font-size: 1rem; font-family: var(--font-display); margin-bottom: 0.2rem; }
+  .order-item-sub { font-size: 0.83rem; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+
+  .badge-rated {
+    background: var(--gold-tint); color: var(--gold);
+    font-size: 0.75rem; padding: 0.18rem 0.5rem; border-radius: var(--radius-full);
+    font-weight: 700; margin-left: 0.5rem; vertical-align: middle;
+  }
+
+  .review-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 1.5rem 1.75rem; margin-bottom: 1.1rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  }
+  .review-card-left { display: flex; align-items: center; gap: 1rem; }
+  .review-card-stars { color: var(--gold); margin: 0.25rem 0; font-weight: 600; font-size: 0.9rem; }
+  .review-card-comment { color: var(--ink-soft); font-size: 0.88rem; max-width: 460px; }
+
+  .rate-card {
+    max-width: 560px; background: var(--surface); padding: 2.25rem;
+    border-radius: var(--radius-lg); border: 1px solid var(--border);
+  }
+  .rate-card h2 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 650; margin-bottom: 0.3rem; }
+  .rate-card .rate-subject { color: var(--ink-soft); margin-bottom: 1.75rem; font-weight: 600; font-size: 0.92rem; }
+
+  .hidden { display: none !important; }
+  .error { color: var(--danger); margin-top: 0.5rem; font-size: 0.85rem; font-weight: 500; }
+
+  @media (max-width: 860px) {
+    .nav-container { flex-wrap: wrap; padding: 0.85rem 1.25rem; }
+    .header-search { order: 3; max-width: 100%; flex-basis: 100%; }
+    .nav-actions { margin-left: auto; }
+    main { padding: 1.75rem 1.25rem 4rem; }
+    .detail-container, .cart-layout { grid-template-columns: 1fr; }
+    .detail-img { max-height: 320px; }
+  }
+</style>
 </head>
 <body>
 
   <header>
     <div class="nav-container">
       <div class="brand" onclick="navigateTo('catalog')">Cake Delight</div>
+
+      <div class="header-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input id="global-search-input" type="text" placeholder="Search cakes by name..." oninput="handleSearchInput(this.value)">
+      </div>
+
       <div class="nav-actions">
-        <span class="user-badge" id="user-indicator">User A</span>
+        <div class="user-chip-wrap">
+          <button class="user-badge user-badge-btn" id="user-indicator-btn" onclick="toggleUserEditor(event)" aria-label="Edit your name">
+            <span id="user-indicator-name">User A</span>
+            <svg class="edit-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path></svg>
+          </button>
+          <div id="user-editor" class="user-editor hidden">
+            <label for="user-name-input">Your name</label>
+            <input type="text" id="user-name-input" placeholder="Enter your name" value="User A" required>
+            <p id="user-name-error" class="error hidden">Name is required</p>
+            <div class="user-editor-actions">
+              <button class="secondary" onclick="cancelUserEdit(event)">Cancel</button>
+              <button class="accent" onclick="saveUserIdentity(event)">Save</button>
+            </div>
+            <p class="user-editor-hint">We generate a consistent user ID from your name — the same name always maps to the same account.</p>
+          </div>
+        </div>
+
+        <div class="notif-wrap">
+          <button class="notif-bell" id="notif-bell-btn" onclick="toggleNotificationDropdown(event)" aria-label="Notifications">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            <span id="notif-badge" class="notif-badge hidden">0</span>
+          </button>
+          <div id="notif-dropdown" class="notif-dropdown hidden">
+            <div class="notif-dropdown-head">
+              <span>Notifications</span>
+              <span class="count-label" id="notif-count-label">0 new</span>
+            </div>
+            <div id="notif-list"></div>
+          </div>
+        </div>
+
         <button class="secondary" onclick="navigateTo('orders')">Your Orders</button>
-        <!-- NEW: My Reviews button -->
         <button class="secondary" onclick="navigateTo('my-reviews')">My Reviews</button>
         <button class="secondary" onclick="navigateTo('cart')">Basket (<span id="cart-count">0</span>)</button>
       </div>
     </div>
   </header>
 
-  <main id="app-root">
-    <!-- Content injected via JS -->
-  </main>
+  <main id="app-root"></main>
 
   <script>
-    // Configuration
+
     const API_GATEWAY = 'http://localhost:5000/api/v1';
-    const USER_ID = '11111111-1111-1111-1111-111111111111';
-    
+
+    const DEFAULT_USER_NAME = 'User A';
+    const DEFAULT_USER_ID = '11111111-1111-1111-1111-111111111111';
+
+    let currentUserName = DEFAULT_USER_NAME;
+    let USER_ID = DEFAULT_USER_ID;
+
+    const SEARCH_API = 'http://localhost:5000/api/v1';
+
     // State
     const appRoot = document.getElementById('app-root');
     const cartCountEl = document.getElementById('cart-count');
 
-    // --- API Service Wrapper ---
+    let notificationState = {
+      items: [],   // { orderId, status, timestamp, read }
+      unreadCount: 0
+    };
+
+
+    let catalogState = {
+      allCakes: [],    
+      categories: [],     
+      activeCategory: 'All',
+      searchTerm: '',
+      searchDebounce: null
+    };
+
     async function fetchAPI(endpoint, options = {}) {
       const headers = {
         'Content-Type': 'application/json',
@@ -202,20 +758,28 @@
       try {
         const response = await fetch(`${API_GATEWAY}${endpoint}`, { ...options, headers });
         if (response.status === 204) return { status: 'success' };
-        
+
         const data = await response.json();
         if (!response.ok) throw new Error(data.message || data.error || 'API Request Failed');
-        
-        return data.data !== undefined ? data.data : data; 
+
+        return data.data !== undefined ? data.data : data;
       } catch (error) {
         console.error(`Error fetching ${endpoint}:`, error);
         throw error;
       }
     }
 
-    // --- Navigation Logic ---
+    async function fetchSearchAPI(endpoint) {
+      const headers = { 'Content-Type': 'application/json', 'X-User-Id': USER_ID };
+      const response = await fetch(`${SEARCH_API}${endpoint}`, { headers });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || data.error || 'Search request failed');
+      return data.data !== undefined ? data.data : data;
+    }
+
+
     async function navigateTo(view, param = null) {
-      appRoot.innerHTML = '<p>Loading...</p>';
+      appRoot.innerHTML = '<div class="loading-row"><span class="spinner"></span> Loading...</div>';
       try {
         if (view === 'catalog') await renderCatalog();
         else if (view === 'cake') await renderCakeDetail(param);
@@ -224,53 +788,130 @@
         else if (view === 'orders') await renderOrders();
         else if (view === 'my-reviews') await renderMyReviews();
         else if (view === 'rate') await renderRateView(param);
-        
+
         updateBasketCount();
       } catch (error) {
-        appRoot.innerHTML = `<div class="error">Failed to load view: ${error.message}</div>`;
+        appRoot.innerHTML = `<div class="error-state"><div class="emoji">⚠️</div>Failed to load view: ${error.message}</div>`;
       }
     }
 
-    // 1. Catalog View
-    // 1. Catalog View (With average ratings query for grid layout)
-    async function renderCatalog() {
+    function clearGlobalSearchIfNotCatalog() {
+      const input = document.getElementById('global-search-input');
+      if (input) input.value = catalogState.searchTerm;
+    }
+
+    async function renderCatalog(category = catalogState.activeCategory) {
       const cakes = await fetchAPI('/cakes');
       const cakeList = Array.isArray(cakes) ? cakes : (cakes.cakes || []);
+      const categorySet = new Set(cakeList.map(c => c.category || 'General'));
+      catalogState.categories = ['All', ...Array.from(categorySet).sort()];
 
-      // Fetch average ratings for each cake in parallel
+      let workingList = cakeList;
+
+      if (category && category !== 'All') {
+        try {
+          const filtered = await fetchSearchAPI(`/cakes?category=${encodeURIComponent(category)}`);
+          workingList = Array.isArray(filtered) ? filtered : (filtered.cakes || []);
+        } catch (e) {
+          console.warn('Category search failed, falling back to full catalog', e);
+          workingList = cakeList;
+        }
+      }
+
+      catalogState.activeCategory = category || 'All';
+      catalogState.allCakes = workingList;
+
       const ratingsMap = {};
       await Promise.all(
-        cakeList.map(async (cake) => {
+        workingList.map(async (cake) => {
           try {
-            const avgData = await fetchAPI(`/cakes/${cake.id}/ratings/average`);
-            ratingsMap[cake.id] = avgData;
+            ratingsMap[cake.id] = await fetchAPI(`/cakes/${cake.id}/ratings/average`);
           } catch (e) {
             ratingsMap[cake.id] = { averageScore: 0, totalReviews: 0 };
           }
         })
       );
+      catalogState.ratingsMap = ratingsMap;
 
-      let html = `<div class="catalog-grid">`;
-      cakeList.forEach(cake => {
-        // Extract the rating for this specific cake
-        const rating = ratingsMap[cake.id] || { averageScore: 0, totalReviews: 0 };
-        const scoreDisplay = rating.averageScore && rating.averageScore > 0 
+      appRoot.innerHTML = `
+        <h1 class="page-heading">Our Cakes</h1>
+        <p class="page-subtext">Baked fresh, rated by people who've actually tasted them.</p>
+        <div class="filter-row" id="category-filter-row"></div>
+        <div id="catalog-results"></div>
+      `;
+
+      renderCategoryPills();
+      applyCatalogFilterAndRender();
+    }
+
+    function renderCategoryPills() {
+      const row = document.getElementById('category-filter-row');
+      if (!row) return;
+      row.innerHTML = catalogState.categories.map(cat => `
+        <button class="pill ${cat === catalogState.activeCategory ? 'active' : ''}" onclick="handleCategoryClick('${cat.replace(/'/g, "\\'")}')">${cat}</button>
+      `).join('');
+    }
+
+    async function handleCategoryClick(category) {
+      if (category === catalogState.activeCategory) return;
+      appRoot.querySelector('#catalog-results').innerHTML = '<div class="loading-row"><span class="spinner"></span> Loading...</div>';
+      await renderCatalog(category);
+    }
+
+    function handleSearchInput(value) {
+      catalogState.searchTerm = value.trim();
+      clearTimeout(catalogState.searchDebounce);
+      catalogState.searchDebounce = setTimeout(() => {
+        if (document.getElementById('catalog-results')) {
+          applyCatalogFilterAndRender();
+        }
+      }, 200);
+    }
+
+    function applyCatalogFilterAndRender() {
+      const term = catalogState.searchTerm.toLowerCase();
+      const filtered = term
+        ? catalogState.allCakes.filter(c => (c.name || '').toLowerCase().includes(term))
+        : catalogState.allCakes;
+
+      const resultsEl = document.getElementById('catalog-results');
+      if (!resultsEl) return;
+
+      const metaText = term
+        ? `${filtered.length} result${filtered.length === 1 ? '' : 's'} for "${catalogState.searchTerm}"${catalogState.activeCategory !== 'All' ? ` in ${catalogState.activeCategory}` : ''}`
+        : `${filtered.length} cake${filtered.length === 1 ? '' : 's'}${catalogState.activeCategory !== 'All' ? ` in ${catalogState.activeCategory}` : ''}`;
+
+      if (filtered.length === 0) {
+        resultsEl.innerHTML = `
+          <p class="results-meta">${metaText}</p>
+          <div class="empty-state">
+            <div class="emoji">🍰</div>
+            <h3>No cakes found</h3>
+            <p>Try a different search term or category.</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = `<p class="results-meta">${metaText}</p><div class="catalog-grid">`;
+      filtered.forEach(cake => {
+        const rating = catalogState.ratingsMap[cake.id] || { averageScore: 0, totalReviews: 0 };
+        const scoreDisplay = rating.averageScore && rating.averageScore > 0
           ? `★ ${Number(rating.averageScore).toFixed(1)} (${rating.totalReviews})`
           : `★ New`;
 
         html += `
           <div class="card" onclick="navigateTo('cake', '${cake.id}')">
-            <img class="card-img" src="${cake.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${cake.name}">
+            <div class="card-img-wrap">
+              <img class="card-img" src="${cake.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${cake.name}">
+              <span class="card-rating-float">${scoreDisplay}</span>
+            </div>
             <div class="card-content">
-              <div class="card-meta">
-                <span class="card-category">${cake.category || 'General'}</span>
-                <!-- Renders the dynamic average score here -->
-                <span class="card-rating" style="color: #b45309; font-weight: 600;">${scoreDisplay}</span>
-              </div>
+              <span class="card-category">${cake.category || 'General'}</span>
               <div class="card-title">${cake.name}</div>
               <div class="card-footer">
                 <span class="card-price">₹${Number(cake.price).toFixed(2)}</span>
-                <span style="color: ${cake.isAvailable ? 'var(--success)' : '#dc2626'}">
+                <span class="status-tag ${cake.isAvailable ? 'in-stock' : 'out-stock'}">
                   ${cake.isAvailable ? 'Available' : 'Sold Out'}
                 </span>
               </div>
@@ -279,34 +920,34 @@
         `;
       });
       html += `</div>`;
-      appRoot.innerHTML = html;
+      resultsEl.innerHTML = html;
     }
-    // 2. Cake Detail View
+
     async function renderCakeDetail(cakeId) {
       const cake = await fetchAPI(`/cakes/${cakeId}`);
       let averageData = { averageScore: 0, totalReviews: 0 };
-      
+
       try {
         averageData = await fetchAPI(`/cakes/${cakeId}/ratings/average`);
-      } catch (e) { /* Ignore if empty */ }
+      } catch (e) {  }
 
       let html = `
-        <button class="secondary" onclick="navigateTo('catalog')" style="margin-bottom: 2rem;">&larr; Back to Catalog</button>
+        <button class="back-link" onclick="navigateTo('catalog')">&larr; Back to Catalog</button>
         <div class="detail-container">
           <div>
             <img class="detail-img" src="${cake.imageUrl || 'https://via.placeholder.com/600x400'}" alt="${cake.name}">
           </div>
           <div>
-            <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">${cake.name}</h1>
-            <p class="card-category">${cake.category || 'General'}</p>
-            <div style="display: flex; gap: 1rem; align-items: center; margin: 1rem 0;">
-              <span class="card-price" style="font-size: 1.5rem;">$${Number(cake.price).toFixed(2)}</span>
-              <span style="color: var(--text-muted)">
+            <div class="detail-category">${cake.category || 'General'}</div>
+            <h1 class="detail-title">${cake.name}</h1>
+            <div class="detail-meta-row">
+              <span class="detail-price">₹${Number(cake.price).toFixed(2)}</span>
+              <span class="detail-rating">
                 ★ ${averageData.averageScore ? Number(averageData.averageScore).toFixed(1) : 'No'} (${averageData.totalReviews || 0} reviews)
               </span>
             </div>
-            
-            <p style="color: var(--text-muted); line-height: 1.6; margin-bottom: 2rem;">
+
+            <p class="detail-desc">
               ${cake.description || 'No description available.'}
             </p>
 
@@ -315,17 +956,17 @@
                 <input type="number" id="qty-input" class="qty-input" value="1" min="1" max="10">
                 <button onclick="addToBasket('${cake.id}')">Add to Basket</button>
               </div>
-              <p id="action-msg" class="success hidden" style="margin-top: 1rem; color: var(--success);"></p>
+              <p id="action-msg" class="inline-success hidden"></p>
             ` : `
-              <div class="alert" style="background: #fee2e2; color: #dc2626;">Currently Unavailable</div>
+              <div class="unavailable-banner">Currently Unavailable</div>
             `}
           </div>
         </div>
 
-        <div style="margin-top: 3rem; background: var(--card-bg); padding: 2rem; border-radius: 8px; border: 1px solid var(--border);">
-          <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem;">Customer Reviews</h3>
+        <div class="reviews-panel">
+          <h3>Customer Reviews</h3>
           <div id="reviews-container">
-            <p style="color: var(--text-muted);">Loading reviews...</p>
+            <div class="loading-row"><span class="spinner"></span> Loading reviews...</div>
           </div>
         </div>
       `;
@@ -336,35 +977,44 @@
         const ratingsRes = await fetchAPI(`/cakes/${cakeId}/ratings`);
         const ratings = Array.isArray(ratingsRes) ? ratingsRes : (ratingsRes.data || ratingsRes.ratings || []);
         const container = document.getElementById('reviews-container');
-        
+
         if (ratings.length === 0) {
-          container.innerHTML = '<p style="color: var(--text-muted);">No reviews yet. Purchase this cake to leave a review!</p>';
+          container.innerHTML = '<p class="review-empty">No reviews yet. Purchase this cake to leave a review!</p>';
         } else {
-          container.innerHTML = ratings.map(r => `
-            <div style="border-bottom: 1px solid var(--border); padding: 1.25rem 0;">
-              <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                <strong style="font-size: 0.875rem;">Customer ID: ${r.userId ? r.userId.substring(0,8) + '...' : 'Verified Buyer'}</strong>
-                <span style="color: #f59e0b; letter-spacing: 2px;">${'★'.repeat(r.score)}${'☆'.repeat(5-r.score)}</span>
+          container.innerHTML = ratings.map(r => {
+            const shortId = r.userId ? r.userId.substring(0, 2).toUpperCase() : 'VB';
+            return `
+              <div class="review-row">
+                <div class="review-avatar">${shortId}</div>
+                <div class="review-body">
+                  <div class="review-head">
+                    <strong class="review-name">${r.userId ? r.userId.substring(0,8) + '...' : 'Verified Buyer'}</strong>
+                    <span class="review-stars">${'★'.repeat(r.score)}${'☆'.repeat(5-r.score)}</span>
+                  </div>
+                  <p class="review-comment">${r.comment || ''}</p>
+                </div>
               </div>
-              <p style="color: var(--text-main); font-size: 0.95rem;">${r.comment || ''}</p>
-            </div>
-          `).join('');
+            `;
+          }).join('');
         }
       } catch (e) {
         document.getElementById('reviews-container').innerHTML = '<p class="error">Failed to load reviews.</p>';
       }
     }
 
-    // 3. Cart View
     async function renderCart() {
       const basket = await fetchAPI('/basket');
       const items = basket.items || [];
-      
+
       if (items.length === 0) {
         appRoot.innerHTML = `
-          <h2>Your Basket</h2>
-          <p style="margin-top: 1rem; color: var(--text-muted);">Your basket is empty.</p>
-          <button style="margin-top: 1rem;" onclick="navigateTo('catalog')">Continue Shopping</button>
+          <h2 class="page-heading">Your Basket</h2>
+          <div class="empty-state" style="margin-top:1rem;">
+            <div class="emoji">🛒</div>
+            <h3>Your basket is empty</h3>
+            <p style="margin-bottom:1.25rem;">Add a few cakes to get started.</p>
+            <button onclick="navigateTo('catalog')">Continue Shopping</button>
+          </div>
         `;
         return;
       }
@@ -372,18 +1022,23 @@
       let itemsHtml = items.map(item => `
         <div class="cart-item">
           <div>
-            <div style="font-weight: 500;">${item.cakeName}</div>
-            <div style="color: var(--text-muted); font-size: 0.875rem;">$${Number(item.unitPrice).toFixed(2)} x ${item.quantity}</div>
+            <div class="cart-item-name">${item.cakeName}</div>
+            <div class="cart-item-sub">₹${Number(item.unitPrice).toFixed(2)} each</div>
           </div>
           <div style="display: flex; align-items: center; gap: 1rem;">
-            <div style="font-weight: 600;">$${(item.unitPrice * item.quantity).toFixed(2)}</div>
-            <button class="secondary" style="padding: 0.25rem 0.5rem; color: #dc2626;" onclick="removeFromBasket('${item.cakeId}')">Remove</button>
+            <div class="qty-stepper" id="qty-stepper-${item.cakeId}">
+              <button class="qty-btn" onclick="decrementCartItem('${item.cakeId}', ${item.quantity})" ${item.quantity <= 1 ? 'disabled' : ''} aria-label="Decrease quantity">−</button>
+              <span class="qty-value">${item.quantity}</span>
+              <button class="qty-btn" onclick="incrementCartItem('${item.cakeId}', ${item.quantity})" aria-label="Increase quantity">+</button>
+            </div>
+            <div class="cart-item-total">₹${(item.unitPrice * item.quantity).toFixed(2)}</div>
+            <button class="danger-ghost" onclick="removeFromBasket('${item.cakeId}')">Remove</button>
           </div>
         </div>
       `).join('');
 
       appRoot.innerHTML = `
-        <h2 style="margin-bottom: 1.5rem;">Your Basket</h2>
+        <h2 class="page-heading" style="margin-bottom:1.5rem;">Your Basket</h2>
         <div class="cart-layout">
           <div class="cart-items">
             ${itemsHtml}
@@ -391,31 +1046,28 @@
           <div class="summary-box">
             <div class="summary-row">
               <span>Total</span>
-              <span>$${Number(basket.totalAmount).toFixed(2)}</span>
+              <span>₹${Number(basket.totalAmount).toFixed(2)}</span>
             </div>
             <div class="input-group">
               <label for="email-input">Customer Email</label>
               <input type="email" id="email-input" placeholder="usera@test.com" value="usera@test.com">
             </div>
-            <button style="width: 100%;" onclick="processCheckout()">Checkout Now</button>
+            <button class="accent full-width" onclick="processCheckout()">Checkout Now</button>
             <p id="checkout-error" class="error hidden"></p>
           </div>
         </div>
       `;
     }
 
-    // 4. Order Success View
     async function renderOrderSuccess(orderId) {
       appRoot.innerHTML = `
-        <div style="text-align: center; max-width: 600px; margin: 4rem auto;">
-          <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+        <div class="success-panel">
+          <div class="success-icon">✓</div>
           <h2>Order Completed!</h2>
-          <p style="color: var(--text-muted); margin: 1rem 0;">Your order has been placed successfully. Order ID: ${orderId}</p>
-          <button onclick="navigateTo('orders')">View Your Orders</button>
-          
-          <div id="notification-status" style="margin-top: 3rem; text-align: left; background: #f1f5f9; padding: 1.5rem; border-radius: 8px;">
-            <div style="font-weight: 600; margin-bottom: 0.5rem;">System Notifications</div>
-            <p style="font-size: 0.875rem; color: var(--text-muted);">Polling notification service...</p>
+          <p style="color: var(--ink-soft); margin: 0.75rem 0 0;">Your order has been placed successfully.</p>
+          <div class="order-id-chip">Order ID: ${orderId}</div>
+          <div style="margin-top: 1.75rem;">
+            <button onclick="navigateTo('orders')">View Your Orders</button>
           </div>
         </div>
       `;
@@ -428,10 +1080,15 @@
           if (notifications && notifications.length > 0) {
             clearInterval(poll);
             const n = notifications[0];
-            document.getElementById('notification-status').innerHTML = `
-              <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--success);">Email Notification Sent</div>
-              <p style="font-size: 0.875rem;">Status: ${n.status}</p>
-            `;
+            const statusEl = document.getElementById('notification-status');
+            // if (statusEl) {
+            //   statusEl.innerHTML = `
+            //     <div class="notify-title" style="color: var(--success);">Email Notification Sent</div>
+            //     <p style="font-size: 0.85rem;">Status: ${n.status}</p>
+            //   `;
+            // }
+            // Surface it in the navbar bell too
+            addNotification(orderId, n.status);
           }
         } catch (e) {
           if (attempts > 5) clearInterval(poll);
@@ -439,16 +1096,20 @@
       }, 2000);
     }
 
-    // 5. Render Completed Orders (Handles POST vs PUT detection)
     async function renderOrders() {
-      let html = `<h2 style="margin-bottom: 1.5rem;">Your Completed Orders</h2>`;
+      let html = `<h2 class="page-heading" style="margin-bottom:1.5rem;">Your Completed Orders</h2>`;
 
       try {
         const itemsRes = await fetchAPI('/basket/completed');
         const items = Array.isArray(itemsRes) ? itemsRes : (itemsRes.data || []);
 
         if (items.length === 0) {
-          html += `<p style="color: var(--text-muted);">You haven't purchased any cakes yet.</p>`;
+          html += `
+            <div class="empty-state">
+              <div class="emoji">📦</div>
+              <h3>No orders yet</h3>
+              <p>You haven't purchased any cakes yet.</p>
+            </div>`;
           appRoot.innerHTML = html;
           return;
         }
@@ -456,8 +1117,7 @@
         const uniqueCakeIds = [...new Set(items.map(i => i.cakeId))];
         const cakeDetails = {};
         const userRatingsMap = {};
-        
-        // Fetch details and ratings for each cake
+
         await Promise.all(
           uniqueCakeIds.map(async (cakeId) => {
             try {
@@ -483,14 +1143,13 @@
 
         Object.entries(ordersMap).forEach(([orderId, orderItems]) => {
           html += `
-            <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
-              <div style="font-weight: 600; margin-bottom: 1rem; color: var(--text-muted);">Order ID: ${orderId}</div>
+            <div class="order-card">
+              <div class="order-card-head">Order ID: ${orderId}</div>
               ${orderItems.map(item => {
                 const cake = cakeDetails[item.cakeId] || {};
                 const cakeImg = cake.imageUrl || 'https://via.placeholder.com/80?text=Cake';
                 const escapedName = (item.cakeName || cake.name || 'Cake').replace(/'/g, "\\'");
-                
-                // Check if current user already rated this cake
+
                 const ratings = userRatingsMap[item.cakeId] || [];
                 const existingRating = ratings.find(r => r.userId === USER_ID);
                 const isRated = !!existingRating;
@@ -498,27 +1157,25 @@
                 const escapedComment = isRated ? (existingRating.comment || '').replace(/'/g, "\\'") : '';
 
                 return `
-                  <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; border-top: 1px solid var(--border); gap: 1rem;">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                      <img src="${cakeImg}" alt="${item.cakeName}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border);" />
+                  <div class="order-line">
+                    <div class="order-line-left">
+                      <img src="${cakeImg}" alt="${item.cakeName}" class="order-thumb" />
                       <div>
-                        <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.25rem;">
+                        <div class="order-item-name">
                           ${item.cakeName}
-                          ${isRated ? `<span class="badge-rated" style="margin-left: 0.5rem;">★ ${existingRating.score}/5</span>` : ''}
+                          ${isRated ? `<span class="badge-rated">★ ${existingRating.score}/5</span>` : ''}
                         </div>
-                        <div style="font-size: 0.875rem; color: var(--text-muted);">
-                          Quantity: ${item.quantity} | Price: $${Number(item.unitPrice).toFixed(2)}
+                        <div class="order-item-sub">
+                          Quantity: ${item.quantity} | Price: ₹${Number(item.unitPrice).toFixed(2)}
                         </div>
                       </div>
                     </div>
-                    
+
                     ${isRated ? `
-                      <!-- PUT Request Flow: Cake is already rated -->
                       <button class="secondary" onclick="navigateTo('rate', { cakeId: '${item.cakeId}', cakeName: '${escapedName}', ratingId: '${existingRating.id}', score: ${existingRating.score}, comment: '${escapedComment}', isEdit: true })">
                         Edit Review
                       </button>
                     ` : `
-                      <!-- POST Request Flow: New rating -->
                       <button class="secondary" onclick="navigateTo('rate', { cakeId: '${item.cakeId}', cakeName: '${escapedName}', isEdit: false })">
                         Write Review
                       </button>
@@ -530,18 +1187,14 @@
           `;
         });
       } catch (error) {
-        html += `
-          <div class="alert" style="background: #fee2e2; color: #dc2626;">
-            Failed to load completed orders: ${error.message}
-          </div>`;
+        html += `<div class="error-state">Failed to load completed orders: ${error.message}</div>`;
       }
 
       appRoot.innerHTML = html;
     }
 
-    // 6. Render My Reviews View (Lists user's submitted reviews for editing via PUT)
     async function renderMyReviews() {
-      let html = `<h2 style="margin-bottom: 1.5rem;">My Submitted Reviews</h2>`;
+      let html = `<h2 class="page-heading" style="margin-bottom:1.5rem;">My Submitted Reviews</h2>`;
 
       try {
         const itemsRes = await fetchAPI('/basket/completed');
@@ -556,7 +1209,7 @@
               const cake = await fetchAPI(`/cakes/${cakeId}`);
               const ratingsRes = await fetchAPI(`/cakes/${cakeId}/ratings`);
               const ratings = Array.isArray(ratingsRes) ? ratingsRes : (ratingsRes.data || ratingsRes.ratings || []);
-              
+
               const userRating = ratings.find(r => r.userId === USER_ID);
               if (userRating) {
                 myReviews.push({
@@ -575,21 +1228,26 @@
         );
 
         if (myReviews.length === 0) {
-          html += `<p style="color: var(--text-muted);">You haven't written any reviews yet. Complete an order to review a cake!</p>`;
+          html += `
+            <div class="empty-state">
+              <div class="emoji">✍️</div>
+              <h3>No reviews yet</h3>
+              <p>Complete an order to review a cake!</p>
+            </div>`;
         } else {
           myReviews.forEach(rev => {
             const escapedName = rev.cakeName.replace(/'/g, "\\'");
             const escapedComment = (rev.comment || '').replace(/'/g, "\\'");
             html += `
-              <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                  <img src="${rev.cakeImg}" alt="${rev.cakeName}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border);" />
+              <div class="review-card">
+                <div class="review-card-left">
+                  <img src="${rev.cakeImg}" alt="${rev.cakeName}" class="order-thumb" />
                   <div>
-                    <div style="font-weight: 600; font-size: 1.05rem;">${rev.cakeName}</div>
-                    <div style="color: #f59e0b; margin: 0.25rem 0; font-weight: 500;">
+                    <div class="order-item-name">${rev.cakeName}</div>
+                    <div class="review-card-stars">
                       ${'★'.repeat(rev.score)}${'☆'.repeat(5 - rev.score)} (${rev.score}/5)
                     </div>
-                    <p style="color: var(--text-muted); font-size: 0.9rem;">${rev.comment || 'No comment provided.'}</p>
+                    <p class="review-card-comment">${rev.comment || 'No comment provided.'}</p>
                   </div>
                 </div>
                 <button class="secondary" onclick="navigateTo('rate', { cakeId: '${rev.cakeId}', cakeName: '${escapedName}', ratingId: '${rev.ratingId}', score: ${rev.score}, comment: '${escapedComment}', isEdit: true })">
@@ -600,24 +1258,23 @@
           });
         }
       } catch (error) {
-        html += `<div class="alert" style="background: #fee2e2; color: #dc2626;">Failed to load reviews: ${error.message}</div>`;
+        html += `<div class="error-state">Failed to load reviews: ${error.message}</div>`;
       }
 
       appRoot.innerHTML = html;
     }
 
-    // 7. Dynamic Write/Edit Review Form
     async function renderRateView(cakeData) {
       const isEdit = cakeData.isEdit;
       const currentScore = cakeData.score || 5;
       const currentComment = cakeData.comment || '';
 
       appRoot.innerHTML = `
-        <button class="secondary" onclick="navigateTo('orders')" style="margin-bottom: 2rem;">&larr; Back to Orders</button>
-        <div style="max-width: 600px; background: var(--card-bg); padding: 2rem; border-radius: 8px; border: 1px solid var(--border);">
-          <h2 style="margin-bottom: 0.5rem;">${isEdit ? 'Update Your Review' : 'Write a Review'}</h2>
-          <p style="color: var(--text-muted); margin-bottom: 2rem; font-weight: 500;">${cakeData.cakeName}</p>
-          
+        <button class="back-link" onclick="navigateTo('orders')">&larr; Back to Orders</button>
+        <div class="rate-card">
+          <h2>${isEdit ? 'Update Your Review' : 'Write a Review'}</h2>
+          <p class="rate-subject">${cakeData.cakeName}</p>
+
           <div class="input-group">
             <label>Rating Score (1-5)</label>
             <select id="review-score">
@@ -628,26 +1285,25 @@
               <option value="1" ${currentScore === 1 ? 'selected' : ''}>1 - Poor (⭐)</option>
             </select>
           </div>
-          
+
           <div class="input-group">
             <label>Your Comment</label>
             <textarea id="review-comment" rows="4" placeholder="What did you think about this cake?">${currentComment}</textarea>
           </div>
-          
-          <button onclick="submitReview('${cakeData.cakeId}', '${cakeData.ratingId || ''}', ${isEdit})" style="width: 100%;">
-            ${isEdit ? 'Update Review (PUT)' : 'Submit Review (POST)'}
+
+          <button class="accent full-width" onclick="submitReview('${cakeData.cakeId}', '${cakeData.ratingId || ''}', ${isEdit})">
+            ${isEdit ? 'Update Review' : 'Submit Review'}
           </button>
-          <div id="review-msg" class="hidden" style="margin-top: 1rem; text-align: center; font-weight: 500;"></div>
+          <div id="review-msg" class="hidden" style="margin-top: 1rem; text-align: center; font-weight: 600; font-size: 0.9rem;"></div>
         </div>
       `;
     }
 
-    // Handles POST for creation and PUT for updates
     async function submitReview(cakeId, ratingId = '', isEdit = false) {
       const score = parseInt(document.getElementById('review-score').value, 10);
       const comment = document.getElementById('review-comment').value;
       const msgEl = document.getElementById('review-msg');
-      
+
       try {
         const endpoint = isEdit ? `/cakes/${cakeId}/ratings/${ratingId}` : `/cakes/${cakeId}/ratings`;
         const method = isEdit ? 'PUT' : 'POST';
@@ -656,20 +1312,229 @@
           method,
           body: JSON.stringify({ score, comment })
         });
-        
+
         msgEl.textContent = isEdit ? 'Review updated successfully!' : 'Review submitted successfully!';
         msgEl.style.color = 'var(--success)';
         msgEl.classList.remove('hidden');
-        
+
         setTimeout(() => navigateTo('orders'), 1500);
       } catch (error) {
         msgEl.textContent = error.message;
-        msgEl.style.color = '#dc2626';
+        msgEl.style.color = 'var(--danger)';
         msgEl.classList.remove('hidden');
       }
     }
 
-    // Helper Cart Actions
+    function timeAgo(timestamp) {
+      const diffSec = Math.max(0, Math.floor((Date.now() - timestamp) / 1000));
+      if (diffSec < 60) return 'just now';
+      const diffMin = Math.floor(diffSec / 60);
+      if (diffMin < 60) return `${diffMin}m ago`;
+      const diffHr = Math.floor(diffMin / 60);
+      if (diffHr < 24) return `${diffHr}h ago`;
+      return `${Math.floor(diffHr / 24)}d ago`;
+    }
+
+    function addNotification(orderId, status) {
+      notificationState.items.unshift({
+        orderId,
+        status,
+        timestamp: Date.now(),
+        read: false
+      });
+      notificationState.unreadCount++;
+      renderNotificationBadge();
+      renderNotificationList();
+
+      const bell = document.getElementById('notif-bell-btn');
+      if (bell) {
+        bell.classList.remove('has-ring');
+        void bell.offsetWidth; 
+        bell.classList.add('has-ring');
+      }
+    }
+
+    function renderNotificationBadge() {
+      const badge = document.getElementById('notif-badge');
+      if (!badge) return;
+      if (notificationState.unreadCount > 0) {
+        badge.textContent = notificationState.unreadCount > 9 ? '9+' : notificationState.unreadCount;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+      const countLabel = document.getElementById('notif-count-label');
+      if (countLabel) countLabel.textContent = `${notificationState.unreadCount} new`;
+    }
+
+    function renderNotificationList() {
+      const listEl = document.getElementById('notif-list');
+      if (!listEl) return;
+
+      if (notificationState.items.length === 0) {
+        listEl.innerHTML = `
+          <div class="notif-empty">
+            <div class="emoji">🔔</div>
+            No notifications yet
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = notificationState.items.map((n, idx) => `
+        <div class="notif-item ${n.read ? '' : 'unread'}" onclick="openNotification(${idx})">
+          <div class="notif-icon">✓</div>
+          <div class="notif-item-body">
+            <div class="notif-item-title">Order confirmed</div>
+            <div class="notif-item-sub"> #${n.orderId.substring(0, 8)}...</div>
+          </div>
+          <div class="notif-item-time">${timeAgo(n.timestamp)}</div>
+        </div>
+      `).join('');
+    }
+
+    function openNotification(idx) {
+      const n = notificationState.items[idx];
+      if (!n) return;
+      if (!n.read) {
+        n.read = true;
+        notificationState.unreadCount = Math.max(0, notificationState.unreadCount - 1);
+        renderNotificationBadge();
+        renderNotificationList();
+      }
+      document.getElementById('notif-dropdown').classList.add('hidden');
+      navigateTo('order-success', n.orderId);
+    }
+
+    function toggleNotificationDropdown(evt) {
+      if (evt) evt.stopPropagation();
+      const dropdown = document.getElementById('notif-dropdown');
+      const wasHidden = dropdown.classList.contains('hidden');
+      dropdown.classList.toggle('hidden');
+
+      if (wasHidden) {
+        notificationState.items.forEach(n => n.read = true);
+        notificationState.unreadCount = 0;
+        renderNotificationBadge();
+        renderNotificationList();
+      }
+    }
+
+    document.addEventListener('click', (evt) => {
+      const dropdown = document.getElementById('notif-dropdown');
+      const wrap = document.querySelector('.notif-wrap');
+      if (dropdown && !dropdown.classList.contains('hidden') && wrap && !wrap.contains(evt.target)) {
+        dropdown.classList.add('hidden');
+      }
+    });
+
+    const USER_NAMESPACE = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+
+    async function nameToUUID(name) {
+      const normalizedName = name.trim().toLowerCase();
+
+      if (!normalizedName) {
+        throw new Error('Name cannot be empty');
+      }
+
+      const namespaceBytes = uuidToBytes(USER_NAMESPACE);
+
+      const nameBytes = new TextEncoder().encode(normalizedName);
+
+      const data = new Uint8Array(namespaceBytes.length + nameBytes.length);
+      data.set(namespaceBytes);
+      data.set(nameBytes, namespaceBytes.length);
+
+      const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+      const hash = new Uint8Array(hashBuffer);
+
+      hash[6] = (hash[6] & 0x0f) | 0x50;
+
+      hash[8] = (hash[8] & 0x3f) | 0x80;
+
+      return bytesToUUID(hash.slice(0, 16));
+    }
+
+    function uuidToBytes(uuid) {
+      return new Uint8Array(
+        uuid.replace(/-/g, '')
+          .match(/.{2}/g)
+          .map(byte => parseInt(byte, 16))
+      );
+    }
+
+    function bytesToUUID(bytes) {
+      const hex = Array.from(bytes)
+        .map(byte => byte.toString(16).padStart(2, '0'))
+        .join('');
+
+      return [
+        hex.substring(0, 8),
+        hex.substring(8, 12),
+        hex.substring(12, 16),
+        hex.substring(16, 20),
+        hex.substring(20, 32)
+      ].join('-');
+    }
+
+    function toggleUserEditor(evt) {
+      if (evt) evt.stopPropagation();
+      const editor = document.getElementById('user-editor');
+      const wasHidden = editor.classList.contains('hidden');
+      editor.classList.toggle('hidden');
+
+      if (wasHidden) {
+        document.getElementById('user-name-input').value = currentUserName;
+        document.getElementById('user-name-error').classList.add('hidden');
+        document.getElementById('user-name-input').focus();
+      }
+    }
+
+    function cancelUserEdit(evt) {
+      if (evt) evt.stopPropagation();
+      document.getElementById('user-editor').classList.add('hidden');
+    }
+
+    async function saveUserIdentity(evt) {
+      if (evt) evt.stopPropagation();
+      const input = document.getElementById('user-name-input');
+      const errorEl = document.getElementById('user-name-error');
+      const name = input.value;
+
+      if (!name.trim()) {
+        errorEl.textContent = 'Name is required';
+        errorEl.classList.remove('hidden');
+        input.focus();
+        return;
+      }
+
+      try {
+        const newId = name.trim().toLowerCase() === DEFAULT_USER_NAME.toLowerCase()
+          ? DEFAULT_USER_ID
+          : await nameToUUID(name);
+
+        currentUserName = name.trim();
+        USER_ID = newId;
+
+        document.getElementById('user-indicator-name').textContent = currentUserName;
+        errorEl.classList.add('hidden');
+        document.getElementById('user-editor').classList.add('hidden');
+
+        updateBasketCount();
+      } catch (error) {
+        errorEl.textContent = error.message || 'Could not generate a user ID';
+        errorEl.classList.remove('hidden');
+      }
+    }
+
+    document.addEventListener('click', (evt) => {
+      const editor = document.getElementById('user-editor');
+      const wrap = document.querySelector('.user-chip-wrap');
+      if (editor && !editor.classList.contains('hidden') && wrap && !wrap.contains(evt.target)) {
+        editor.classList.add('hidden');
+      }
+    });
+
     async function updateBasketCount() {
       try {
         const basket = await fetchAPI('/basket');
@@ -681,6 +1546,12 @@
     }
 
     async function addToBasket(cakeId) {
+      if (!USER_ID) {
+        alert('Please set your name first so we can identify your account, then try again.');
+        toggleUserEditor();
+        return;
+      }
+
       const qty = parseInt(document.getElementById('qty-input').value, 10);
       try {
         await fetchAPI('/basket/items', {
@@ -697,6 +1568,34 @@
       }
     }
 
+    async function updateCartItemQuantity(cakeId, newQuantity) {
+      if (!Number.isInteger(newQuantity) || newQuantity < 1) return;
+
+      const stepper = document.getElementById(`qty-stepper-${cakeId}`);
+      if (stepper) stepper.querySelectorAll('button').forEach(b => b.disabled = true);
+
+      try {
+        await fetchAPI(`/basket/items/${cakeId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ quantity: newQuantity })
+        });
+        await renderCart();
+        updateBasketCount();
+      } catch (error) {
+        alert('Failed to update quantity: ' + error.message);
+        if (stepper) stepper.querySelectorAll('button').forEach(b => b.disabled = false);
+      }
+    }
+
+    function incrementCartItem(cakeId, currentQuantity) {
+      updateCartItemQuantity(cakeId, currentQuantity + 1);
+    }
+
+    function decrementCartItem(cakeId, currentQuantity) {
+      if (currentQuantity <= 1) return;
+      updateCartItemQuantity(cakeId, currentQuantity - 1);
+    }
+
     async function removeFromBasket(cakeId) {
       try {
         await fetchAPI(`/basket/items/${cakeId}`, { method: 'DELETE' });
@@ -709,7 +1608,7 @@
     async function processCheckout() {
       const email = document.getElementById('email-input').value;
       const errEl = document.getElementById('checkout-error');
-      
+
       if (!email) {
         errEl.textContent = "Email is required";
         errEl.classList.remove('hidden');
@@ -721,7 +1620,7 @@
           method: 'POST',
           body: JSON.stringify({ customerEmail: email })
         });
-        
+
         const orderId = orderData.id || orderData.orderId;
         navigateTo('order-success', orderId);
       } catch (error) {
@@ -731,8 +1630,8 @@
     }
 
     // Initialize Application
+    renderNotificationList();
     navigateTo('catalog');
-
   </script>
 </body>
 </html>
