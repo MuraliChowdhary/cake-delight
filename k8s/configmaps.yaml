@@ -6,7 +6,6 @@ metadata:
 data:
   PORT: "5001"
   NODE_ENV: "production"
-  ALLOWED_ORIGIN: "http://localhost:8080"
   REDIS_URL: "redis://redis:6379"
 
 ---
@@ -18,7 +17,6 @@ metadata:
 data:
   PORT: "5003"
   NODE_ENV: "production"
-  ALLOWED_ORIGIN: "http://localhost:8080"
   REDIS_URL: "redis://redis:6379"
 
 ---
