@@ -8,14 +8,11 @@ async function sendOrderConfirmationEmail({ to, orderId, items, totalAmount }) {
     .map((item) => `  - ${item.name} x${item.quantity} @ $${item.unitPrice.toFixed(2)}`)
     .join('\n');
 
-  
-    if (!env.emailUser || !env.emailPass) {
-  logger.error(
-    'Email credentials are not configured. EMAIL_USER and EMAIL_PASS are required.'
-  );
+  if (!env.emailUser || !env.emailPass) {
+    logger.error('Email credentials are not configured. EMAIL_USER and EMAIL_PASS are required.');
 
-  // throw  new AppError('Email credentials are not configured',400);
-}
+    // throw  new AppError('Email credentials are not configured',400);
+  }
 
   const info = await transporter.sendMail({
     from: env.emailFrom,
