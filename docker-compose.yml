@@ -182,8 +182,8 @@ services:
       RABBITMQ_URL: amqp://cakeuser:cakepass@rabbitmq:5672
       EMAIL_HOST: smtp.ethereal.email
       EMAIL_PORT: 587
-      EMAIL_USER: jason.green24@ethereal.email
-      EMAIL_PASS: eRndjFyfcK65wD6QkU
+      EMAIL_USER: scotty.wilkinson45@ethereal.email
+      EMAIL_PASS: U5p1qTCEQWTqAQHcwV
       EMAIL_FROM: orders@cakedelight.test
     networks:
       - cake-delight-net
