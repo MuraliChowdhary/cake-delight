@@ -40,7 +40,7 @@ async function removeItemHandler(req, res, next) {
   }
 }
 
-async function getCompletedItemsHandler(req,res,next){
+async function getCompletedItemsHandler(req, res, next) {
   try {
     const order = await basketService.getCompletedItems(req.userId);
     res.status(200).json({ status: 'success', data: order });
@@ -54,5 +54,5 @@ module.exports = {
   addItemHandler,
   updateItemHandler,
   removeItemHandler,
-  getCompletedItemsHandler
+  getCompletedItemsHandler,
 };

@@ -29,5 +29,4 @@ router.delete('/basket/items/:cakeId', extractUser, validate(removeItemSchema), 
 router.post('/orders/checkout', extractUser, validate(checkoutSchema), checkoutHandler);
 router.get('/orders/:id', extractUser, validate(orderIdParamsSchema), getOrderHandler);
 
-
 module.exports = router;

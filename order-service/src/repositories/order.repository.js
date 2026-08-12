@@ -170,5 +170,5 @@ module.exports = {
   removeItem,
   recalculateTotal,
   completeOrder,
-  getCompletedItems
+  getCompletedItems,
 };
