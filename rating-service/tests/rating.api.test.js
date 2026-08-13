@@ -12,7 +12,7 @@ describe('Rating Service Integration & Perspective Tests', () => {
   let createdRatingId;
 
   // ==========================================
-  // Perspective 1: Positive Paths (Happy Path)
+  //  1: Positive Paths (Happy Path)
   // ==========================================
   describe('1. Positive Paths', () => {
     test('POST /api/v1/cakes/:cakeId/ratings - Should create rating with optional comment omitted', async () => {
@@ -28,7 +28,7 @@ describe('Rating Service Integration & Perspective Tests', () => {
 
       expect(response.body.status).toBe('success');
       expect(response.body.data.score).toBe(4);
-      expect(response.body.data.comment).toBeNull(); // Verifies optional comment is handled safely
+      expect(response.body.data.comment).toBeNull();
       expect(response.body.data.id).toBeDefined();
       createdRatingId = response.body.data.id;
     });
@@ -55,7 +55,7 @@ describe('Rating Service Integration & Perspective Tests', () => {
   });
 
   // ==========================================
-  // Perspective 2: Validation Safeguards
+  //  2: Validation Safeguards
   // ==========================================
   describe('2. Validation Edge Cases', () => {
     test('POST /api/v1/cakes/:cakeId/ratings - Should reject score > 5', async () => {
@@ -88,7 +88,7 @@ describe('Rating Service Integration & Perspective Tests', () => {
   });
 
   // ==========================================
-  // Perspective 3: Non-Existent Resources
+  //  3: Non-Existent Resources
   // ==========================================
   describe('3. Non-Existent Resources', () => {
     test('GET /api/v1/cakes/:cakeId/ratings - Should return 200 with empty array for cake with NO ratings', async () => {
@@ -114,7 +114,7 @@ describe('Rating Service Integration & Perspective Tests', () => {
   });
 
   // ==========================================
-  // Perspective 4: Payload & Body Limits
+  //  4: Payload & Body Limits
   // ==========================================
   describe('4. Body & Payload Limits', () => {
     test('POST /api/v1/cakes/:cakeId/ratings - Should reject payloads larger than 10KB with 413', async () => {
@@ -127,7 +127,7 @@ describe('Rating Service Integration & Perspective Tests', () => {
   });
 
   // ==========================================
-  // Perspective 5: Infrastructure & Probes
+  //  5: Infrastructure & Probes
   // ==========================================
   describe('5. Infrastructure & Health Probes', () => {
     test('GET /health/live - Should return 200 OK', async () => {

@@ -10,13 +10,6 @@ const notificationRouter = require('./src/routes/notification.routes');
 const app = express();
 
 app.use(helmet());
-// app.use(
-//   cors({
-//     origin: env.nodeEnv === 'production' ? process.env.ALLOWED_ORIGIN || false : '*',
-//     methods: ['GET', 'OPTIONS'],
-//     allowedHeaders: ['Content-Type', 'x-request-id'],
-//   })
-// );
 app.use(express.json({ limit: '10kb' }));
 
 app.use(requestMiddleware);

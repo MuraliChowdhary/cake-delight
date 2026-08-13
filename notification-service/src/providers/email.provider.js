@@ -10,8 +10,6 @@ async function sendOrderConfirmationEmail({ to, orderId, items, totalAmount }) {
 
   if (!env.emailUser || !env.emailPass) {
     logger.error('Email credentials are not configured. EMAIL_USER and EMAIL_PASS are required.');
-
-    // throw  new AppError('Email credentials are not configured',400);
   }
 
   const info = await transporter.sendMail({

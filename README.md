@@ -381,8 +381,6 @@ The step-by-step commands are already in Section 6. This section is about the de
 
 **Secrets versus ConfigMaps.** Anything that's a password or a credential — database logins, the RabbitMQ password, the email account — lives in a Kubernetes Secret, base64-encoded. Everything else — ports, hostnames, feature flags — lives in a ConfigMap. This isn't just tidiness: Secrets and ConfigMaps are treated differently by Kubernetes' own access controls, so keeping credentials only where they belong actually matters.
 
-**Why databases are StatefulSets and services are Deployments.** A StatefulSet gives a pod a stable identity and makes sure its storage always reattaches to the same pod even after a restart — exactly what a database needs. The four backend services and the gateway don't hold any state of their own, so a plain Deployment is the right, simpler tool for them.
-
 **Two different health checks per service.** Every service exposes `/health/live` and `/health/ready` separately. Liveness just answers "is the process still running." Readiness actually checks that the service can reach its database (and Redis, where relevant) — so Kubernetes won't send traffic to a pod that's technically alive but can't actually do its job yet, like right after a restart before its database connection has finished reconnecting.
 
 **Two real bugs we hit, and how we found them:**

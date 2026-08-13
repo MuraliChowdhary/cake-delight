@@ -9,7 +9,7 @@ afterAll(async () => {
 describe('Catalog Service Integration & Perspective Tests', () => {
   let createdCakeId=0;
 
-  // Perspective 1: Positive Path - Creation
+  // 1: Positive Path - Creation
   test('POST /api/v1/cakes - Should create a new cake with valid payload', async () => {
     const payload = {
       name: 'Red Velvet Deluxe',
@@ -29,7 +29,7 @@ describe('Catalog Service Integration & Perspective Tests', () => {
     createdCakeId = response.body.data.id;
   });
 
-  // Perspective 2: Validation Safeguard - Bad UUID
+  //  2.1: Validation Safeguard - Bad UUID
   test('GET /api/v1/cakes/:id - Should reject invalid UUID format with 400', async () => {
     const response = await request(app)
       .get('/api/v1/cakes/invalid-uuid-123')
@@ -38,7 +38,7 @@ describe('Catalog Service Integration & Perspective Tests', () => {
     expect(response.body.error).toBeDefined();
   });
 
-  // Perspective 2: Validation Safeguard - Negative Price
+  //  2.2: Validation Safeguard - Negative Price
   test('POST /api/v1/cakes - Should reject negative price with 400', async () => {
     const response = await request(app)
       .post('/api/v1/cakes')
@@ -52,7 +52,7 @@ describe('Catalog Service Integration & Perspective Tests', () => {
     expect(response.body.error).toBeDefined();
   });
 
-  // Perspective 3: Non-Existent Resource (404)
+  //  3: Non-Existent Resource (404)
   test('GET /api/v1/cakes/:id - Should return 404 for missing cake UUID', async () => {
     const fakeUuid = '00000000-0000-0000-0000-000000000000';
     const response = await request(app)
@@ -62,7 +62,7 @@ describe('Catalog Service Integration & Perspective Tests', () => {
     expect(response.body.error.message).toContain('not found');
   });
 
-  // Perspective 4: Payload Limit Guard (>10KB Payload)
+  //  4: Payload Limit Guard (>10KB Payload)
   test('POST /api/v1/cakes - Should reject payloads larger than 10KB with 413', async () => {
     const hugeDescription = 'A'.repeat(12000); // 12KB string
     await request(app)
@@ -76,7 +76,7 @@ describe('Catalog Service Integration & Perspective Tests', () => {
       .expect(413);
   });
 
-  // Perspective 5: Infrastructure & Health Probes
+  //  5: Infrastructure & Health Probes
   test('GET /health/live - Should return 200 OK for Kubernetes Liveness probe', async () => {
     const response = await request(app)
       .get('/health/live')
