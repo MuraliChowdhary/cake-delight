@@ -1,42 +1,71 @@
 # Cake Delight
 
-Cake Delight is a small online bakery. A customer can look through a list of cakes, filter them by name, category, or price, put a few in a basket, adjust quantities, check out, and get an email once the order goes through. Afterward, they can rate what they bought.
+Cake Delight is a small online bakery where customers can browse and filter cakes by name, category, or price, add items to their basket, and proceed to checkout. After placing an order, customers receive an email confirmation and can rate their purchased cakes.
 
-That's the whole product on the surface. What this project is really about, underneath, is how it's built: instead of one big application doing everything, the system is split into four independent services, each owning one part of the business — the catalog, the orders, the ratings, and the notifications — talking to each other over HTTP and through a message queue, running in their own containers, and deployable one at a time without touching the others.
+The system consists of four independent services: catalog management, order processing, ratings, and notifications. These services communicate via HTTP and a message queue, operate in separate containers, and can be deployed individually.
 
-This document walks through everything: what's inside, how to run it, what each piece does, and the decisions we made along the way — including a few things that went wrong during the build and how we fixed them, because that's usually more useful to know than pretending everything worked on the first try.
+This document provides an overview of the project, detailing the components, system operation, service functions, development decisions, and challenges faced along the way.
 
 ---
 
-## 1. What's Actually Inside
+## Quick Start — Just Want to Run It?
 
-Four backend services, one API Gateway sitting in front of all of them, a small plain HTML/CSS/JavaScript frontend, and the supporting infrastructure (databases, a message broker, a cache) that ties it together.
+If you want to see it working before diving into details, follow these quick steps.
 
-- **Cake Catalog Service** — the product list. Cakes, their prices, categories, and whether they're in stock.
-- **Order Service** — the basket and the checkout. This is where money and quantities live.
-- **Rating Service** — reviews. Star ratings and comments per cake.
-- **Notification Service** — sends the order confirmation email once a checkout finishes, and keeps a record of what was sent.
-- **API Gateway** — the single door into the system. The frontend never talks to any of the four services directly; everything goes through here.
+**1. Install Docker and Kind.**  
+Docker runs the containers, and Kind sets up the local Kubernetes cluster. Refer to [`docs/setup.md`](docs/setup.md) for installation instructions if you don’t have them yet.
 
-Each service has its own PostgreSQL database that nothing else is allowed to touch directly. Order Service and Notification Service also talk to each other indirectly through RabbitMQ, a message broker, rather than calling one another's APIs — more on why further down.
+**2. Ensure Docker is Running.**  
+Make sure Docker is active, and you have the necessary permissions to run Docker commands. On Linux, this usually requires your user to be in the `docker` group.
+
+**3. Deploy with One Script:**  
+Run the following commands to deploy the project:
+```bash
+chmod +x deploy.sh
+./deploy.sh
+```
+This script checks your tool installations, builds images, creates the Kind cluster, and deploys the system. The first run may take a few minutes.
+
+After it completes, use this command to forward the API Gateway:
+```bash
+kubectl port-forward -n cake-delight svc/api-gateway 5000:5000
+```
+Now, open the frontend as outlined in [Section 6](#6-running-the-project).
+
+---
+
+## 1. What's Inside
+
+The system includes four backend services, an API Gateway, a simple HTML/CSS/JavaScript frontend, and supporting infrastructure like databases, a message broker, and a cache.
+
+- **Cake Catalog Service**: Manages the product list including cakes, prices, categories, and stock.
+  
+- **Order Service**: Handles customer shopping baskets, purchases, payment info, and item quantities.
+  
+- **Rating Service**: Collects cake reviews, star ratings, and comments.
+  
+- **Notification Service**: Sends order confirmation emails and stores records of those emails.
+
+- **API Gateway**: Serves as the single entry point for all interactions, with the frontend only communicating through it.
+
+Each service has a separate PostgreSQL database. The Order Service and Notification Service communicate indirectly via RabbitMQ, a message broker.
 
 ---
 
 ## 2. Technology Stack
 
-- **Language & runtime:** Plain JavaScript running on Node.js. We considered TypeScript early on but were asked to build in JavaScript, so the whole backend is written that way — no build step, no compiler, just Node reading `.js` files directly.
-- **Web framework:** Express, for all five backend pieces.
-- **Databases:** PostgreSQL. Every service gets its own separate database and its own login — no service can see another service's tables, even by accident.
-- **Caching:** Redis, used by Catalog and Rating Service to avoid hitting Postgres on every single read.
-- **Messaging:** RabbitMQ, used only for the one event that genuinely needs to be asynchronous — telling Notification Service that an order was just completed.
-- **Validation:** Zod, used at the edge of every service to check incoming request bodies before any business logic runs.
-- **Containers:** Docker for every service, Docker Compose for running everything together locally, and Kubernetes (via Kind) for the deployed version.
-- **API Gateway:** Express Gateway, a configuration-driven gateway framework. Worth being upfront about this one: Express Gateway hasn't been actively maintained in a few years. We used it because it's what we were taught to use, and it does the job well for this project's size, but if this were going into real production long-term, a maintained alternative would be the better call. We've noted that explicitly in the Assumptions section rather than pretending otherwise.
-- **Frontend:** Plain HTML, CSS, and JavaScript — no framework. It talks only to the API Gateway.
-- **Email:** Nodemailer, pointed at Ethereal, a free fake-SMTP service made for exactly this kind of testing. It doesn't deliver to a real inbox — it gives you a preview link instead, which is perfect for a demo where you want to show an email was actually generated without needing real mailboxes.
+- **Language & Runtime:** The project uses plain JavaScript on Node.js.
+- **Web Framework:** I use Express for all backend components.
+- **Databases:** PostgreSQL is employed with separate databases for each service, ensuring no cross-access.
+- **Caching:** Redis is implemented by the Catalog and Rating Services to optimize read requests to PostgreSQL.
+- **Messaging:** RabbitMQ handles the asynchronous event of notifying the Notification Service upon order completion.
+- **Validation:** Zod validates incoming request bodies at the edge of each service.
+- **Containers:** Docker is utilized for each service, with Docker Compose for development and Kubernetes for deployment via Kind.
+- **API Gateway:** Express Gateway is our configuration-driven gateway framework, although it hasn’t been actively maintained. An alternative would be better for long-term use, as noted in the Assumptions.
+- **Frontend:** The frontend is built with plain HTML, CSS, and JavaScript, communicating only with the API Gateway.
+- **Email:** Nodemailer is configured with Ethereal for testing email generation without real inbox delivery.
 
-One thing we didn't do: there's no separate authentication or user account service anywhere in this system. That's a deliberate choice explained properly in the Assumptions section, not an oversight.
-
+    Note: There is no separate authentication or user account service, which is a deliberate design choice explained in the Assumptions section.
 ---
 
 ## 3. Project Structure
@@ -132,8 +161,6 @@ Every service reads its configuration from environment variables rather than har
 | `CATALOG_SERVICE_URL` | Order | how Order Service reaches Catalog Service to look up a cake's price |
 | `EMAIL_HOST` / `EMAIL_PORT` / `EMAIL_USER` / `EMAIL_PASS` / `EMAIL_FROM` | Notification | the Ethereal test SMTP account details |
 
-A couple of things we deliberately removed along the way, worth mentioning so nobody goes looking for them: there's no `JWT_SECRET` anywhere — we never built authentication, so it was never needed. And `ALLOWED_ORIGIN` used to exist inside each individual service for CORS, but partway through the build we moved CORS handling entirely into the API Gateway, so it no longer belongs on the backend services at all. If you see it referenced anywhere in an older file, that's leftover and safe to delete.
-
 ---
 
 ## 6. Running the Project
@@ -146,11 +173,11 @@ docker compose up --build
 
 This starts everything: all four databases, RabbitMQ, Redis, the four backend services, and the gateway. Give it a minute — the databases and RabbitMQ need to finish starting before the app services can connect to them, and each service is written to wait and retry rather than crash if it comes up first.
 
-Once it's running, the API Gateway is reachable at `http://localhost:5000`. Open `frontend/index.html` through a simple local web server (we used the VS Code Live Server extension, running on `http://localhost:5500`) — opening the file directly from disk won't work correctly because of how browsers handle cross-origin requests.
+Once it's running, the API Gateway is reachable at `http://localhost:5000`. Open `frontend/index.html` through a simple local web server (I used the VS Code Live Server extension, running on `http://localhost:5500`) — opening the file directly from disk won't work correctly because of how browsers handle cross-origin requests.
 
 ### The real deployment — Kubernetes with Kind
 
-We chose Kind over Minikube because it runs cluster nodes as plain Docker containers using the Docker installation you already have, rather than spinning up a separate virtual machine layer. It starts faster and feels closer to how a real cluster behaves.
+I chose Kind over Minikube because it runs cluster nodes as plain Docker containers using the Docker installation you already have, rather than spinning up a separate virtual machine layer. It starts faster and feels closer to how a real cluster behaves.
 
 ```bash
 kind create cluster --name cake-delight
@@ -205,33 +232,39 @@ kubectl port-forward -n cake-delight svc/api-gateway 5000:5000
 ### Cake Catalog Service
 **Port:** 5001 · **Database:** `catalog_db` (PostgreSQL) · **Depends on:** Redis for caching
 
-Holds the list of cakes — name, description, category, price, and whether it's currently available. Anyone can browse and filter without needing to be identified. Reads are cached in Redis for a short time so repeated browsing doesn't hammer the database; any change to a cake clears the relevant cache entries so nobody ever sees stale data for long.
+### Cake Catalog Service
+This service lists cakes with their name, description, category, price, and availability. Users can browse and filter this list without signing in. To optimize performance, reads are cached in Redis. When a cake is modified, the related cache is cleared to ensure up-to-date information.
 
 ### Order Service
-**Port:** 5002 · **Database:** `order_db` (PostgreSQL) · **Depends on:** Catalog Service (to look up prices), RabbitMQ (to announce a completed order)
+**Port:** 5002  
+**Database:** `order_db` (PostgreSQL)  
+**Dependencies:** Catalog Service, RabbitMQ
 
-Handles the basket and checkout. When a cake is added to the basket, Order Service asks Catalog Service what it currently costs and stores that price with the basket line — so if the price changes later in the catalog, an order that's already been placed doesn't silently change with it. Checking out turns the basket into a finished order and tells the rest of the system it happened by publishing a message, rather than calling Notification Service directly.
+The Order Service manages the shopping basket and checkout. When a cake is added, it retrieves the current price from the Catalog Service. If the price changes later, the order retains the original price. Upon checkout, the basket converts to a completed order, notifying the system via RabbitMQ.
 
 ### Rating Service
-**Port:** 5003 · **Database:** `rating_db` (PostgreSQL) · **Depends on:** Redis for caching
+**Port:** 5003  
+**Database:** `rating_db` (PostgreSQL)  
+**Dependency:** Redis
 
-Lets a customer leave a star rating and an optional comment on a cake, and calculates the average rating per cake. Each customer can only rate a given cake once — trying again updates the same rating rather than creating a second one.
+This service allows customers to rate cakes with stars and comments, calculating an average rating. Each customer can rate a cake only once; updates to existing ratings replace previous ones.
 
 ### Notification Service
-**Port:** 5004 · **Database:** `notification_db` (PostgreSQL) · **Depends on:** RabbitMQ, the email provider
+**Port:** 5004  
+**Database:** `notification_db` (PostgreSQL)  
+**Dependencies:** RabbitMQ, email provider
 
-Doesn't expose much of an API by itself. Its real job is listening — it sits and waits for the "an order just completed" message from Order Service, sends a confirmation email, and keeps a record of whether that email actually went out. Customers can also look up their own notification history.
+The Notification Service listens for completed order messages from the Order Service. It sends confirmation emails and records their status. Customers can also view their notification history.
 
 ### API Gateway
 **Port:** 5000
 
-The only part of the backend the browser is allowed to talk to. It looks at the incoming request's path and forwards it to whichever service owns that piece of the system. It's also the only place that handles cross-origin requests (CORS) — none of the four backend services do this themselves, since a browser only ever talks to the gateway, never to them directly.
-
+    The API Gateway is the primary entry point for the browser to access backend services, forwarding requests based on the path and managing CORS.
 ---
 
 ## 8. API Reference
 
-Every request that needs to know who's making it — adding to a basket, submitting a rating, checking out — expects a header called `X-User-Id`, containing a UUID. There's no login step; the frontend generates one UUID the first time someone visits and reuses it for the rest of their session.
+Every request that needs to know who's making it — adding to a basket, submitting a rating, checking out — expects a header called `X-User-Id`, containing a UUID. There's no login step; the frontend generates one UUID the first time someone visits and reuses it for the rest of their session.  Please  Refer to [`docs/api_documentation.md`](docs/api_documentation.md)
 
 ### Cake Catalog
 
@@ -332,13 +365,15 @@ GET /api/v1/notifications/:orderId     (everything tied to one specific order)
 
 ## 10. Testing
 
-Every endpoint above was tested manually with real requests during development — a full walkthrough with exact commands and expected responses lives in the separate testing document included alongside this README. Beyond the basic "does it return the right thing" checks, we specifically tested the situations that are easy to get wrong in a system like this:
+Every endpoint listed above was tested manually with real requests during development. A comprehensive walkthrough, including exact commands and expected responses, can be found in a separate testing document included with this README. In addition to verifying that the endpoints return the correct responses, I specifically focused on situations that are prone to errors in a system like this:
 
-- Two checkout requests fired at the same basket at nearly the same moment — only one should succeed, the other should be turned away cleanly rather than creating two orders or crashing.
-- The same order-completed message delivered to Notification Service twice — it should recognize the duplicate and not send a second email.
-- Stopping RabbitMQ, then checking out — the order should still go through; the confirmation email just won't send until the broker comes back, and that gets logged clearly rather than silently swallowed.
-- A message that fails to process three times in a row — it should stop retrying and land in a separate holding queue instead of retrying forever.
-- Killing a service mid-request and confirming it finishes the request it was already handling before shutting down, instead of dropping it.
+Please refer to the documentation located at [`docs/api_documentation.md`](docs/api_documentation.md).
+
+1. Two checkout requests sent to the same basket nearly simultaneously—only one should succeed, while the other should be rejected gracefully, avoiding the creation of duplicate orders or system crashes.
+2. The same order-complete message delivered to the Notification Service twice—it should recognize the duplicate and refrain from sending a second email.
+3. Stopping RabbitMQ and then attempting to check out—the order should still be processed; however, the confirmation email will not be sent until the broker is back online. This will be logged clearly rather than being silently ignored.
+4. A message that fails to process three times consecutively should stop retrying and instead be moved to a separate holding queue, rather than attempting to process it indefinitely.
+5. If a service is terminated in the middle of a request, it should finish processing the current request before shutting down rather than dropping it.
 
 ---
 
@@ -377,17 +412,17 @@ docker compose up --build
 
 ## 13. Kubernetes — The Full Story
 
-The step-by-step commands are already in Section 6. This section is about the decisions behind them, and a couple of real problems we ran into while building this, because those are worth knowing if you're picking this project back up later.
+The step-by-step commands are already in Section 6. This section is about the decisions behind them, and a couple of real problems I ran into while building this, because those are worth knowing if you're picking this project back up later.
 
 **Secrets versus ConfigMaps.** Anything that's a password or a credential — database logins, the RabbitMQ password, the email account — lives in a Kubernetes Secret, base64-encoded. Everything else — ports, hostnames, feature flags — lives in a ConfigMap. This isn't just tidiness: Secrets and ConfigMaps are treated differently by Kubernetes' own access controls, so keeping credentials only where they belong actually matters.
 
 **Two different health checks per service.** Every service exposes `/health/live` and `/health/ready` separately. Liveness just answers "is the process still running." Readiness actually checks that the service can reach its database (and Redis, where relevant) — so Kubernetes won't send traffic to a pod that's technically alive but can't actually do its job yet, like right after a restart before its database connection has finished reconnecting.
 
-**Two real bugs we hit, and how we found them:**
+**Two real bugs I hit, and how I found them:**
 
-The first was RabbitMQ refusing to start once we gave it persistent storage — it kept crashing in a loop. The cause turned out to be file permissions: RabbitMQ's container runs as a non-root user, but Kind's default storage setup created the volume owned by root, so RabbitMQ couldn't write to its own data folder. The fix was adding `fsGroup: 999` to the pod's security settings, which tells Kubernetes to hand the volume over to the right user before the container starts.
+The first was RabbitMQ refusing to start once I gave it persistent storage — it kept crashing in a loop. The cause turned out to be file permissions: RabbitMQ's container runs as a non-root user, but Kind's default storage setup created the volume owned by root, so RabbitMQ couldn't write to its own data folder. The fix was adding `fsGroup: 999` to the pod's security settings, which tells Kubernetes to hand the volume over to the right user before the container starts.
 
-The second was more subtle. Notification Service wasn't saving anything to its database when the email provider had a problem — no record at all, not even a failed one. The cause was that the code only wrote to the database *after* the email had either succeeded or failed, and the email call itself had no timeout. If it hung, the code never reached either outcome, so nothing ever got saved. The fix was to write a "pending" record to the database the moment the message arrives, before even attempting to send the email, and update that same record to "sent" or "failed" afterward — plus adding a hard timeout to the email call so it can never hang indefinitely. That's a good example of why testing failure scenarios on purpose, not just the happy path, matters — this bug never would have shown up if we'd only ever tested with working email credentials.
+ The Notification Service didn't log actions when email sending failed, due to hanging calls. I resolved this by writing a "pending" record upon message receipt and updating it post-email attempt. Implementing a timeout for email calls also ensured that the service wouldn’t hang indefinitely, highlighting the need for testing failure scenarios.
 
 ---
 
@@ -405,7 +440,7 @@ A few choices were made along the way that aren't obvious just from reading the 
 
 **There's no login system.** The project brief doesn't ask for one, and building one wasn't part of the assessed scope. Instead, each customer is identified by a UUID that the frontend generates the first time someone visits and stores in the browser, sent along as the `X-User-Id` header on every request that needs it. Nobody's identity is verified — it's trust-based, which is a reasonable simplification for this project but wouldn't be acceptable in a real system handling real payments.
 
-**Every service uses PostgreSQL, not a mix of databases.** We considered using MongoDB for the catalog specifically, since that's a common choice for product catalogs with flexible attributes. We decided against it because every cake in this system has exactly the same fields — there's no genuine flexibility to take advantage of, so a document database wouldn't actually buy us anything, while keeping everything on Postgres keeps the whole deployment simpler.
+**Every service uses PostgreSQL, not a mix of databases.** I considered using MongoDB for the catalog specifically, since that's a common choice for product catalogs with flexible attributes. I decided against it because every cake in this system has exactly the same fields — there's no genuine flexibility to take advantage of, so a document database wouldn't actually buy us anything, while keeping everything on Postgres keeps the whole deployment simpler.
 
 **The code uses plain functions and `module.exports` throughout, not classes.** This was a deliberate style choice, matching how the team was trained, and it's consistent across every service.
 
@@ -417,8 +452,6 @@ A few choices were made along the way that aren't obvious just from reading the 
 
 **Email doesn't go to a real inbox.** It goes through Ethereal, a testing SMTP service that generates a preview link instead of delivering anywhere real. That's the right choice for a project without a real domain or mail provider set up, but it's the first thing that would need to change before this went anywhere near production.
 
-**CORS is handled only at the API Gateway.** Earlier in the build, each backend service had its own CORS setup as well, left over from before the gateway existed. That turned out to cause real problems — two different services disagreeing about what was allowed produced confusing browser errors that took some real debugging to trace back to the actual cause. Once we understood that CORS is something a browser enforces, and that the backend services are never talked to directly by a browser once the gateway is in place, we removed it from all four services and left it only in the gateway, where it actually belongs.
-
-**Rate limiting was ultimately left out of the final build.** Express Gateway supports it, and it was considered, but it isn't enabled in the version this project ships with. This would be a straightforward addition if the project continued past this point.
+**CORS is handled only at the API Gateway.** Earlier in the build, each backend service had its own CORS setup as well, left over from before the gateway existed. That turned out to cause real problems — two different services disagreeing about what was allowed produced confusing browser errors that took some real debugging to trace back to the actual cause. Once I understood that CORS is something a browser enforces, and that the backend services are never talked to directly by a browser once the gateway is in place, I removed it from all four services and left it only in the gateway, where it actually belongs.
 
 **The gateway's allowed origin is currently set to the local development address the frontend runs on during testing.** That's a value specific to this developer's machine and setup, not something that would work as-is anywhere else — it would need to change to match wherever the frontend actually gets hosted.
