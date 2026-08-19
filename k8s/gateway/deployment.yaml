@@ -26,24 +26,6 @@ spec:
             - containerPort: 5000
               name: http
 
-          # readinessProbe:
-          #   httpGet:
-          #     path: /health
-          #     port: 5000
-          #   initialDelaySeconds: 10
-          #   periodSeconds: 10
-          #   timeoutSeconds: 2
-          #   failureThreshold: 3
-
-          # livenessProbe:
-          #   httpGet:
-          #     path: /health
-          #     port: 5000
-          #   initialDelaySeconds: 20
-          #   periodSeconds: 20
-          #   timeoutSeconds: 2
-          #   failureThreshold: 3
-
           resources:
             requests:
               memory: "128Mi"

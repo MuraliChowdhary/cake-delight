@@ -2,8 +2,8 @@ const cakeRepository = require('../repositories/cake.repository');
 const AppError = require('../utils/app-error');
 const cache = require('../utils/cache');
 
-const LIST_TTL = 60; // seconds — lists change more often, shorter TTL
-const DETAIL_TTL = 300; // seconds — single-cake detail is more stable
+const LIST_TTL = 60;
+const DETAIL_TTL = 300; 
 
 function listCacheKey(filters) {
   const sorted = Object.keys(filters)
@@ -43,7 +43,7 @@ async function getCakeById(id) {
 
 async function createCake(cakeData) {
   const cake = await cakeRepository.create(cakeData);
-  await cache.delByPattern('catalog:list:*'); // a new cake can appear in any list combination
+  await cache.delByPattern('catalog:list:*');
   return cake;
 }
 
@@ -53,7 +53,7 @@ async function updateCake(id, updateCakeData) {
 
   const updated = await cakeRepository.update(id, updateCakeData);
   await cache.del(`catalog:cake:${id}`);
-  await cache.delByPattern('catalog:list:*'); // price/category/availability changes affect filters
+  await cache.delByPattern('catalog:list:*');
   return updated;
 }
 

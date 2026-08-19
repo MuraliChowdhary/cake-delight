@@ -16,7 +16,7 @@ spec:
       containers:
         - name: catalog-service
           image: cake-delight-catalog-service:latest
-          imagePullPolicy: Never   # image only exists locally — loaded via `kind load docker-image`
+          imagePullPolicy: Never
           ports:
             - containerPort: 5001
           envFrom:

@@ -4,7 +4,7 @@ metadata:
   name: catalog-db
   namespace: cake-delight
 spec:
-  clusterIP: None          # headless — StatefulSet pods need stable DNS, not load-balancing
+  clusterIP: None
   selector:
     app: catalog-db
   ports:
@@ -39,7 +39,7 @@ spec:
           volumeMounts:
             - name: catalog-db-storage
               mountPath: /var/lib/postgresql/data
-              subPath: postgres   # avoids Postgres complaining about a non-empty mount root (lost+found dir)
+              subPath: postgres
           readinessProbe:
             exec:
               command: ["pg_isready", "-U", "catalog_user", "-d", "catalog_db"]

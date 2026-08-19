@@ -4,11 +4,11 @@ metadata:
   name: api-gateway
   namespace: cake-delight
 spec:
-  type: NodePort # Changed from ClusterIP
+  type: NodePort
   selector:
     app: api-gateway
   ports:
     - name: http
       port: 5000
       targetPort: 5000
-      nodePort: 30050 # Kind will map this port
+      nodePort: 30050
