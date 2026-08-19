@@ -748,26 +748,35 @@
       searchDebounce: null
     };
 
-    async function fetchAPI(endpoint, options = {}) {
-      const headers = {
-        'Content-Type': 'application/json',
-        'X-User-Id': USER_ID,
-        ...options.headers
-      };
+  async function fetchAPI(endpoint, options = {}) {
+  const headers = {
+    'Content-Type': 'application/json',
+    'X-User-Id': USER_ID,
+    ...options.headers
+  };
 
-      try {
-        const response = await fetch(`${API_GATEWAY}${endpoint}`, { ...options, headers });
-        if (response.status === 204) return { status: 'success' };
+  try {
+    const response = await fetch(`${API_GATEWAY}${endpoint}`, { ...options, headers });
+    if (response.status === 204) return { status: 'success' };
 
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.message || data.error || 'API Request Failed');
+    const data = await response.json();
 
-        return data.data !== undefined ? data.data : data;
-      } catch (error) {
-        console.error(`Error fetching ${endpoint}:`, error);
-        throw error;
-      }
+    if (!response.ok) {
+      const errBody = data.error || data;
+
+      const err = new Error(errBody.message || 'API Request Failed');
+      err.status = response.status;
+      err.details = errBody.details;
+      err.requestId = errBody.requestId;
+      throw err;
     }
+
+    return data.data !== undefined ? data.data : data;
+  } catch (error) {
+    console.error(`Error fetching ${endpoint}:`, error);
+    throw error;
+  }
+}
 
     async function fetchSearchAPI(endpoint) {
       const headers = { 'Content-Type': 'application/json', 'X-User-Id': USER_ID };
@@ -1606,29 +1615,68 @@
     }
 
     async function processCheckout() {
-      const email = document.getElementById('email-input').value;
-      const errEl = document.getElementById('checkout-error');
+  const email = document.getElementById('email-input').value.trim();
+  const errEl = document.getElementById('checkout-error');
 
-      if (!email) {
-        errEl.textContent = "Email is required";
-        errEl.classList.remove('hidden');
-        return;
-      }
+  if (!email) {
+    errEl.textContent = 'Email is required';
+    errEl.classList.remove('hidden');
+    return;
+  }
 
-      try {
-        const orderData = await fetchAPI('/orders/checkout', {
-          method: 'POST',
-          body: JSON.stringify({ customerEmail: email })
-        });
+  errEl.textContent = '';
+  errEl.classList.add('hidden');
 
-        const orderId = orderData.id || orderData.orderId;
-        navigateTo('order-success', orderId);
-      } catch (error) {
-        errEl.textContent = error.message;
-        errEl.classList.remove('hidden');
-      }
+  try {
+    const orderData = await fetchAPI('/orders/checkout', {
+      method: 'POST',
+      body: JSON.stringify({
+        customerEmail: email
+      })
+    });
+
+    const orderId = orderData.id || orderData.orderId;
+
+    await navigateTo('order-success', orderId);
+
+  } catch (error) {
+    if (
+      error.status === 409 &&
+      error.details &&
+      Array.isArray(error.details.priceChanges)
+    ) {
+      
+      const changes = error.details.priceChanges;
+
+  errEl.innerHTML = `
+    <strong>Price changed</strong><br>
+    ${changes.map(change => `
+      <div style="margin-top: 0.5rem;">
+        ${change.name}:
+        ₹${Number(change.oldPrice).toFixed(2)}
+        →
+        ₹${Number(change.newPrice).toFixed(2)}
+      </div>
+    `).join('')}
+    <div style="margin-top: 0.75rem;">
+      Please review your basket before checking out again.
+    </div>
+  `;
+
+  errEl.classList.remove('hidden');
+  return;
+
     }
 
+    // Normal error
+    errEl.textContent =
+      typeof error.message === 'string'
+        ? error.message
+        : 'Checkout failed. Please try again.';
+
+    errEl.classList.remove('hidden');
+  }
+}
     // Initialize Application
     renderNotificationList();
     navigateTo('catalog');
