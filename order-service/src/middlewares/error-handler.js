@@ -23,13 +23,19 @@ function errorHandler(err, req, res, _next) {
     logger.error(logPayload, 'Unhandled application error');
   }
 
-  res.status(statusCode).json({
+  const response = {
     error: {
       message,
       status: statusCode,
       requestId: req.id,
     },
-  });
+  };
+
+  if (err.details) {
+    response.error.details = err.details;
+  }
+
+  res.status(statusCode).json(response);
 }
 
 module.exports = errorHandler;

@@ -22,6 +22,8 @@ function mapItem(row) {
     cakeName: row.cake_name,
     unitPrice: parseFloat(row.unit_price),
     quantity: row.quantity,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
   };
 }
 
@@ -159,6 +161,18 @@ async function completeOrder(orderId, customerEmail) {
   });
 }
 
+async function updateItemPrice(orderId, cakeId, newPrice) {
+  const { rows } = await pool.query(
+    `UPDATE order_items
+     SET unit_price = $3, updated_at = NOW()
+     WHERE order_id = $1 AND cake_id = $2
+     RETURNING *`,
+    [orderId, cakeId, newPrice]
+  );
+
+  return rows.length > 0 ? mapItem(rows[0]) : null;
+}
+
 module.exports = {
   findPendingOrder,
   findOrderById,
@@ -171,4 +185,5 @@ module.exports = {
   recalculateTotal,
   completeOrder,
   getCompletedItems,
+  updateItemPrice,
 };
