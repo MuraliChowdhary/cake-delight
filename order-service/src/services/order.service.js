@@ -52,6 +52,11 @@ async function checkout(userId, { customerEmail }) {
   const priceChanges = await revalidateStaleItems(order.id, items);
 
   if (priceChanges.length > 0) {
+    await Promise.all(
+      priceChanges.map((change) =>
+        orderRepository.updateItemPrice(order.id, change.cakeId, change.newPrice)
+      )
+    );
     await orderRepository.recalculateTotal(order.id);
     throw new AppError(
       'Some prices changed since you added these items. Please review before checking out.',
