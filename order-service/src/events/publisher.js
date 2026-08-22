@@ -16,7 +16,7 @@ async function publishOrderCompleted(orderData) {
       'order.events',
       'order.completed',
       Buffer.from(JSON.stringify(event)),
-      { persistent: true } // survives a RabbitMQ restart
+      { persistent: true } 
     );
 
     if (!published) {
@@ -28,8 +28,6 @@ async function publishOrderCompleted(orderData) {
       );
     }
   } catch (err) {
-    // Broker unreachable — this is the key decision: do NOT let this fail the checkout.
-    // The order is already committed in the DB. Log loudly; notification will simply not fire.
     logger.error({ err, orderId: orderData.orderId }, 'Failed to publish OrderCompleted event');
   }
 }

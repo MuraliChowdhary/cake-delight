@@ -14,7 +14,6 @@ async function handleMessage(channel, msg) {
   try {
     event = JSON.parse(msg.content.toString());
   } catch (err) {
-    // Malformed message — can never succeed on retry. Straight to dead-letter.
     logger.error({ err }, 'Received unparseable message — sending to dead-letter queue');
     channel.nack(msg, false, false);
     return;
@@ -31,7 +30,6 @@ async function handleMessage(channel, msg) {
     );
 
     if (retryCount < MAX_RETRIES) {
-      // Republish with an incremented retry count, then remove the original.
       channel.publish('order.events', 'order.completed', msg.content, {
         persistent: true,
         headers: { 'x-retry-count': retryCount + 1 },
@@ -42,7 +40,7 @@ async function handleMessage(channel, msg) {
         { eventId: event.eventId },
         `Exceeded ${MAX_RETRIES} retries — routing to dead-letter queue`
       );
-      channel.nack(msg, false, false); // triggers the queue's x-dead-letter-exchange
+      channel.nack(msg, false, false);
     }
   }
 }

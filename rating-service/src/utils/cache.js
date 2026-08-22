@@ -7,7 +7,7 @@ async function get(key) {
     return value ? JSON.parse(value) : null;
   } catch (err) {
     logger.warn({ err, key }, 'Cache read failed — falling through to DB');
-    return null; // treat a cache error exactly like a cache miss
+    return null;
   }
 }
 

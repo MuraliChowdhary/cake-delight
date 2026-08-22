@@ -153,7 +153,6 @@ async function completeOrder(orderId, customerEmail) {
     );
 
     if (rows.length === 0) {
-      // order was already completed/cancelled by a concurrent request
       throw new AppError('This order has already been checked out', 409);
     }
 

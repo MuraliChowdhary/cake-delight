@@ -2,8 +2,6 @@ http:
   port: 5000
 
 apiEndpoints:
-  # More specific path patterns MUST be listed before broader ones that could also match —
-  # Express Gateway checks pipelines in declaration order and uses the first match.
   ratingApi:
     host: '*'
     paths: '/api/v1/cakes/*/ratings*'

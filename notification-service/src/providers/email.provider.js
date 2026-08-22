@@ -19,7 +19,6 @@ async function sendOrderConfirmationEmail({ to, orderId, items, totalAmount }) {
     text: `Thanks for your order!\n\nOrder ID: ${orderId}\n\n${itemLines}\n\nTotal: ₹${totalAmount.toFixed(2)}`,
   });
 
-  // Ethereal generates a preview URL instead of a real inbox — useful for local/demo verification.
   const previewUrl = nodemailer.getTestMessageUrl(info);
   if (previewUrl) {
     logger.info({ previewUrl, orderId }, 'Email sent — preview available');

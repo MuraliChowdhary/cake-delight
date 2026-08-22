@@ -28,9 +28,6 @@ async function connect() {
     connection = await amqp.connect(env.rabbitmqUrl);
     channel = await connection.createChannel();
 
-    // Dead-letter path:
-    // Messages that exhaust retries land here for inspection.
-    // They are not lost and are not endlessly reprocessed.
     await channel.assertExchange(DEAD_LETTER_EXCHANGE, 'fanout', {
       durable: true,
     });
@@ -41,12 +38,10 @@ async function connect() {
 
     await channel.bindQueue(DEAD_LETTER_QUEUE, DEAD_LETTER_EXCHANGE, '');
 
-    // Main exchange
     await channel.assertExchange(EXCHANGE, 'topic', {
       durable: true,
     });
 
-    // Main notification queue
     await channel.assertQueue(QUEUE, {
       durable: true,
       arguments: {
@@ -56,7 +51,6 @@ async function connect() {
 
     await channel.bindQueue(QUEUE, EXCHANGE, ROUTING_KEY);
 
-    // Process one message at a time.
     await channel.prefetch(1);
 
     connection.on('close', () => {

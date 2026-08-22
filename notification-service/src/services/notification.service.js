@@ -15,9 +15,6 @@ async function processOrderCompletedEvent(event) {
   const { orderId, userId, items, totalAmount, customerContact } = event.data;
   const recipient = customerContact.email;
 
-  // Persist the record FIRST, before attempting delivery. This is the actual fix:
-  // "we received this event and are tracking it" must never depend on whether the
-  // email call succeeds, hangs, or times out.
   await notificationRepository.record({
     eventId: event.eventId,
     orderId,
@@ -54,7 +51,7 @@ async function processOrderCompletedEvent(event) {
       recipient,
       errorMessage: err.message,
     });
-    throw err; // subscriber.js still decides retry vs. dead-letter from here
+    throw err;
   }
 
   return 'processed';

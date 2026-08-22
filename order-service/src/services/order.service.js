@@ -5,6 +5,9 @@ const catalogClient = require('../clients/catalog.client');
 
 const STALE_THRESHOLD_MS = 24 * 60 * 60 * 1000;
 
+// if user when added item into cart if cake price = 400 and he left it for 24 hrs 
+// admin adds new price = 600 then there is catch so inorder to check the prices and intimate the new prices to customer
+
 async function revalidateStaleItems(orderId, items) {
   const now = Date.now();
 

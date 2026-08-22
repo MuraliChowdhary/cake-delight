@@ -4,7 +4,7 @@ const { getChannel } = require('../config/rabbitmq');
 async function getReadiness(req, res) {
   try {
     await pool.query('SELECT 1');
-    getChannel(); // throws if not connected
+    getChannel();
     res.status(200).json({ status: 'READY', database: 'CONNECTED' });
   } catch (err) {
     res.status(503).json({ status: 'NOT_READY', database: 'DISCONNECTED', err });
